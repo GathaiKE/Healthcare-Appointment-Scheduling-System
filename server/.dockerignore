@@ -1,0 +1,38 @@
+# Version Control
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.egg-info
+*.dist-info
+build/
+dist/
+
+# Virtual Environments
+venv/
+.env
+.env.*
+
+
+# Docker and Build Artifacts
+Dockerfile
+docker-compose.yml
+*.tar
+*.log
+
+# Temporary Files
+*.swp
+*.swo
+*.bak
+*.tmp
+*.DS_Store
+
+# Configuration and Secrets
+.env
+
+*.md

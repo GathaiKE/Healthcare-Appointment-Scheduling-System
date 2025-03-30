@@ -52,9 +52,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware'
 ]
 
-AUTH_USER_MODEL="users.User"
 
 ROOT_URLCONF = 'user_service.urls'
 
@@ -95,6 +95,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL="users.User"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,8 +109,38 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME' : 'users.validators.PasswordValidator'
+    }
 ]
 
+AUTH_PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.headers.PBKDF2PasswordHasher'
+]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/hour',
+        'user': '100/hour'
+    }
+}
+
+AUTHENTICATED_BACKENDS=[
+    'django.auth.backends.ModelBackend'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

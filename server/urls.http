@@ -1,0 +1,11 @@
+POST http://127.0.0.1:8000/api/users/register/
+Content-Type: application/json
+
+{
+    "first_name":"Brian",
+    "last_name":"Gathai",
+    "surname":"Kariuki",
+    "email":"briannjeri9@gmail.com",
+    "password":"91371738",
+    "phone":"254712166018"
+}

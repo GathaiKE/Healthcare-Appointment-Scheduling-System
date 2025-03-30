@@ -10,7 +10,11 @@ class User(AbstractUser):
     first_name = models.CharField(null=True)
     last_name = models.CharField(null=True)
     surname = models.CharField(null=True)
+    username = None
+
+    USERNAME_FIELD='email'
+    REQUIRED_FIELDS=[]
 
     def __str__ (self):
-        full_name = self.first_name+self.last_name+self.surname
+        full_name:str = "{self.first_name} {self.last_name} {self.surname}"
         return full_name

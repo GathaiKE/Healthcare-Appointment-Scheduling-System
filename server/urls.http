@@ -48,3 +48,36 @@ Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
 GET http://127.0.0.1:8000/api/users/11/
 Content-Type: application/json
 Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+###
+GET http://127.0.0.1:8000/api/users/me/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+###
+PUT http://127.0.0.1:8000/api/users/me/password/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+{
+    "old_password":"Brian@@1",
+    "new_password":"Admin@@1"
+}
+
+###
+GET http://127.0.0.1:8000/api/users/adminstatus/10/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+{
+    "is_staff": true
+}
+
+###
+GET http://127.0.0.1:8000/api/users/activestatus/10/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+{
+    "is_active": true
+}

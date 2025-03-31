@@ -31,34 +31,22 @@ class UserSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 class AdminSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     class Meta:
         model = User
-        fields = ["id","first_name", "last_name", "surname", "email", "is_staff", "is_active", "password", "phone", "date_joined"]
-
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            first_name= validated_data['first_name'],
-            last_name = validated_data['last_name'],
-            surname = validated_data['surname'],
-            email=validated_data['email'],
-            phone=validated_data['phone'],
-            password=validated_data['password'],
-            is_staff=validated_data['is_staff'],
-            is_active=validated_data['is_active']
-        )
-        return user
-    
-    def update(self, instance, validated_data):
-        password=validated_data.pop('password', None)
-        if password:
-            instance.set_password(password)
-        
-        return super().update(instance, validated_data)
+        fields = ["id", "is_staff", "is_active"]
+        read_only_fields=["id"]
+        extra_kwargs={
+            'is_staff': {'required':True},
+            'is_active': {'required':True}
+        }
 
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True, validators=[validate_password])
+
+    class Meta:
+        model=User
+        fields=["old_password", "new_password"]
 
 class AuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField(label=('Email'), write_only=True)

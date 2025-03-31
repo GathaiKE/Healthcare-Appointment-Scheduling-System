@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RegisterUserView, AuthenticateView,  CurrentUserView, PasswordResetView, UserListView, UserDetailVeiew
+from .views import RegisterUserView, AuthenticateView,  CurrentUserView, PasswordResetView, UserListView, UserDetailVeiew, UserStatusView
 
 urlpatterns = [
     # Public endpoints
@@ -9,9 +9,10 @@ urlpatterns = [
 
     # Authenticated endpoints
     path("me/", CurrentUserView.as_view(), name="current-user"),
-    path("me/password", PasswordResetView.as_view(), name="reset-password"),
+    path("me/password/", PasswordResetView.as_view(), name="reset-password"),
 
     # Admin endpoints
     path("", UserListView.as_view(), name="users-list"),
-    path("<int:pk>/", UserDetailVeiew.as_view(), name="users-detail")
+    path("<int:pk>/", UserDetailVeiew.as_view(), name="users-detail"),
+    path("status/<int:pk>/", UserStatusView.as_view(), name="user-status")
 ]

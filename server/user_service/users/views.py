@@ -36,7 +36,8 @@ class AuthenticateView(APIView):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'surname': user.surname,
-                'email': user.surname,
+                'email': user.email,
+                'phone':f"+{user.phone}",
                 'is_active': user.is_active,
                 'is_superuser': user.is_superuser,
                 'is_staff': user.is_staff,
@@ -103,3 +104,40 @@ class CurrentUserView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+class UserStatusView(generics.RetrieveUpdateAPIView):
+    queryset=User.objects.all()
+    serializer_class=AdminSerializer
+    permission_classes=[IsAdminUser]
+    throttle_classes=[AnonRateThrottle]
+    lookup_field='pk'
+
+    def update(self, request, *args, **kwargs):
+        user=self.get_object()
+
+        if user == request.user and not request.data.get('is_staff', True):
+            return Response({"detail":"Cannot change your own status"}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer=self.get_serializer(data=request.data)
+        new_admin_status=request.data.get('is_staff')
+        new_active_status=request.data.get('is_active')
+
+        if serializer.is_valid():
+            if user.is_staff != new_admin_status and user.is_active == new_active_status:
+                user.is_staff=new_admin_status
+                user.save()
+                return Response({"detail":f"{user.email} is now {'an admin' if user.is_staff else 'not an admin'}"}, status=status.HTTP_202_ACCEPTED)
+            elif user.is_active !=new_active_status and user.is_staff == new_admin_status:
+                user.is_active=new_active_status
+                user.save()
+                return Response({"detail":f"{user.email} is now {'active' if user.is_active else 'inactive'}"}, status=status.HTTP_202_ACCEPTED)
+            elif user.is_active !=new_active_status and user.is_staff != new_admin_status:
+                user.is_active=new_active_status
+                user.is_staff=new_admin_status
+                user.save()
+                return Response({"detail":f"{user.email} is now {'an admin' if user.is_staff else 'not an admin'} and {'active' if user.is_active else 'inactive'}"}, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response({"detail":"No changes made"}, status=status.HTTP_208_ALREADY_REPORTED)
+
+        return Response(serializer.errors, status=status.HTTP_200_OK)
+

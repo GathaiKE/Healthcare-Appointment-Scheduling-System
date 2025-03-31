@@ -53,14 +53,12 @@ class UserListView(generics.ListCreateAPIView):
 
 
     def get_serializer_class(self):
-        
         if self.request.user.is_staff:
             return AdminSerializer
         return UserSerializer
     
     def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.save()
+        instance.delete()
 
 class UserDetailVeiew(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()

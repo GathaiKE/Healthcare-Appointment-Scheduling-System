@@ -5,6 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     class Meta:
         model = User
         fields = ["id","first_name", "last_name", "surname", "email", "password", "phone", "date_joined"]
@@ -21,8 +22,16 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
+    def update(self, instance, validated_data):
+        password=validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        
+        return super().update(instance, validated_data)
 
 class AdminSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     class Meta:
         model = User
         fields = ["id","first_name", "last_name", "surname", "email", "is_staff", "is_active", "password", "phone", "date_joined"]
@@ -39,6 +48,13 @@ class AdminSerializer(serializers.ModelSerializer):
             is_active=validated_data['is_active']
         )
         return user
+    
+    def update(self, instance, validated_data):
+        password=validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        
+        return super().update(instance, validated_data)
 
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(required=True)

@@ -2,23 +2,49 @@ POST http://127.0.0.1:8000/api/users/register/
 Content-Type: application/json
 
 {
-    "first_name":"Brian",
-    "last_name":"Gathai",
-    "surname":"Kariuki",
-    "email":"briannjeri9999@email.com",
-    "password":"A9137173A",
-    "phone":"254712000000"
+    "first_name":"Test",
+    "last_name":"User",
+    "surname":"Second",
+    "email":"stu@gmail.com",
+    "password":"Admin@@1",
+    "phone":"254712121211"
 }
 
 ###
 GET http://127.0.0.1:8000/api/users/
 Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
 
 ###
 POST http://127.0.0.1:8000/api/users/login/
 Content-Type: application/json
 
 {
-    "email":"briannjeri9999@email.com",
-    "password": "A9137173A"
+    "email":"briannjeri9@gmail.com",
+    "password": "Admin@@1"
 }
+
+###
+PUT  http://127.0.0.1:8000/api/users/10/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+{
+    "first_name": "Our",
+    "last_name": "First",
+    "surname": "Doctor",
+    "email": "doc1@email.com",
+    "phone": "254712000000"
+}
+
+
+###
+DELETE http://127.0.0.1:8000/api/users/11/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+
+###
+GET http://127.0.0.1:8000/api/users/11/
+Content-Type: application/json
+Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6

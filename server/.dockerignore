@@ -36,3 +36,4 @@ docker-compose.yml
 .env
 
 *.md
+urls

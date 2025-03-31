@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
@@ -18,7 +19,8 @@ class RegisterUserView(generics.CreateAPIView):
     throttle_classes = [AnonRateThrottle]
 
 class AuthenticateView(APIView):
-    serialializer_class= AuthTokenSerializer
+    serializer_class= AuthTokenSerializer
+    permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
@@ -26,9 +28,21 @@ class AuthenticateView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({
             'token': token.key,
-            'user': user,
+            'user': {
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'surname': user.surname,
+                'email': user.surname,
+                'is_active': user.is_active,
+                'is_superuser': user.is_superuser,
+                'is_staff': user.is_staff,
+                'date_joined': user.date_joined,
+                'last_login': user.last_login
+            },
         })
 
 class UserListView(generics.ListCreateAPIView):

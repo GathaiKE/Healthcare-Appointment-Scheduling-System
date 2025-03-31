@@ -10,8 +10,6 @@ Content-Type: application/json
     "phone":"254712000000"
 }
 
-
-
 ###
 GET http://127.0.0.1:8000/api/users/
 Content-Type: application/json

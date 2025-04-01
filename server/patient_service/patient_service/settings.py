@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer', 'Token'),
+    'VERIFYING_KEY': env('JWT_PUBLIC_KEY'),
+    'ALGORITHM': 'RS256',
+    'ISSUER': 'user_service',
+    'AUDIENCE': 'patient_service'
+}
+
+
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'app.authentication.Authenticate'
+    ]
+}

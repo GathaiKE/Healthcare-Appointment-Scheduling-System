@@ -4,80 +4,70 @@ Content-Type: application/json
 {
     "first_name":"Test",
     "last_name":"User",
-    "surname":"Second",
-    "email":"stu@gmail.com",
+    "surname":"Third",
+    "email":"ttu@gmail.com",
     "password":"Admin@@1",
-    "phone":"254712121211"
+    "phone":"254712121222"
 }
-
-###
-GET http://127.0.0.1:8000/api/users/
-Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
-
 
 ###
 POST http://127.0.0.1:8000/api/users/login/
 Content-Type: application/json
 
 {
-    "email":"briannjeri9@gmail.com",
+    "email":"ttu@gmail.com",
     "password": "Admin@@1"
 }
 
 ###
-PUT  http://127.0.0.1:8000/api/users/10/
+GET http://127.0.0.1:8000/api/users/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+
+###
+PUT  http://127.0.0.1:8000/api/users/15/
+Content-Type: application/json
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 {
-    "first_name": "Our",
-    "last_name": "First",
-    "surname": "Doctor",
-    "email": "doc1@email.com",
-    "phone": "254712000000"
+    "first_name": "Deletable",
+    "last_name": "User",
+    "surname": "Third",
+    "email": "ttu@gmail.com",
+    "phone": "254712121333"
 }
-
 
 ###
 DELETE http://127.0.0.1:8000/api/users/11/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
 GET http://127.0.0.1:8000/api/users/11/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
 GET http://127.0.0.1:8000/api/users/me/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
 PUT http://127.0.0.1:8000/api/users/me/password/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 {
-    "old_password":"Brian@@1",
+    "old_password":"Tester@@1",
     "new_password":"Admin@@1"
 }
 
 ###
-GET http://127.0.0.1:8000/api/users/adminstatus/10/
+GET http://127.0.0.1:8000/api/users/status/15/
 Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
+Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 {
-    "is_staff": true
-}
-
-###
-GET http://127.0.0.1:8000/api/users/activestatus/10/
-Content-Type: application/json
-Authorization: Token c5849a21bc6d761a08a7f95bbdc44739dcc266e6
-
-{
+    "is_staff": true,
     "is_active": true
 }

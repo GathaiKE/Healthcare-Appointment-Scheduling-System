@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-from .serializers import UserSerializer, AdminSerializer, PasswordUpdateSerializer, AuthTokenSerializer
+from .serializers import UserSerializer, AdminSerializer, PasswordUpdateSerializer, AuthTokenSerializer, CustomTokenSerializer
 from .permissions import IsOwnerOrAdmin
 
 User = get_user_model()
@@ -18,8 +18,36 @@ class RegisterUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
+# class AuthenticateView(APIView):
+#     serializer_class= AuthTokenSerializer
+#     permission_classes = [AllowAny]
+#     throttle_classes = [AnonRateThrottle]
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data, context={'request': request})
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+#         token, created = Token.objects.get_or_create(user=user)
+
+#         return Response({
+#             'token': token.key,
+#             'user': {
+#                 'id': user.id,
+#                 'first_name': user.first_name,
+#                 'last_name': user.last_name,
+#                 'surname': user.surname,
+#                 'email': user.email,
+#                 'phone': user.phone,
+#                 'is_active': user.is_active,
+#                 'is_superuser': user.is_superuser,
+#                 'is_staff': user.is_staff,
+#                 'date_joined': user.date_joined,
+#                 'last_login': user.last_login
+#             },
+#         })
+
 class AuthenticateView(APIView):
-    serializer_class= AuthTokenSerializer
+    serializer_class= CustomTokenSerializer
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
@@ -27,24 +55,28 @@ class AuthenticateView(APIView):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-
-        return Response({
-            'token': token.key,
+        
+        response= {
+            'access': serializer.validated_data['access'],
+            'refresh': serializer.validated_data['refresh'],
             'user': {
                 'id': user.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'surname': user.surname,
                 'email': user.email,
-                'phone':f"+{user.phone}",
+                'phone': user.phone,
                 'is_active': user.is_active,
                 'is_superuser': user.is_superuser,
                 'is_staff': user.is_staff,
                 'date_joined': user.date_joined,
                 'last_login': user.last_login
-            },
-        })
+            }
+        }
+
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
 
 class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -73,7 +105,7 @@ class UserDetailVeiew(generics.RetrieveUpdateDestroyAPIView):
         return UserSerializer
     
     def perform_destroy(self, instance):
-        instance.is_active = False
+        instance.delete()
         instance.save()
 
 class PasswordResetView(generics.UpdateAPIView):

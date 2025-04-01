@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -142,6 +143,20 @@ REST_FRAMEWORK = {
 AUTHENTICATED_BACKENDS=[
     'django.auth.backends.ModelBackend'
 ]
+
+SIMPLE_JWT ={
+    'TOKEN_OBTAIN_SERIALIZER':'users.serializers.CustomTokenSerializer',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ALGORITHM': 'RS256',
+    'SIGNING_KEY': env('JWT_PRIVATE_KEY'),
+    'VERIFYING_KEY': env('JWT_PUBLIC_KEY'),
+    'AUTH_HEADER_TYPES': ('Bearer','Token'),
+    'ISSUER': 'user_service',
+    'AUDIENCE': ['appointment_service', 'doctor_service', 'medical_records_service', 'notifications_service', 'patient_service'],
+    'USER_ID_FIELD': 'id'
+
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

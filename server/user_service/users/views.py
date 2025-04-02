@@ -1,14 +1,11 @@
-import json
-from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
-from .serializers import UserSerializer, AdminSerializer, PasswordUpdateSerializer, AuthTokenSerializer, CustomTokenSerializer
+from .serializers import UserSerializer, AdminSerializer, PasswordUpdateSerializer, AuthTokenSerializer
 from .permissions import IsOwnerOrAdmin
 
 User = get_user_model()
@@ -18,43 +15,15 @@ class RegisterUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
-# class AuthenticateView(APIView):
-#     serializer_class= AuthTokenSerializer
-#     permission_classes = [AllowAny]
-#     throttle_classes = [AnonRateThrottle]
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(data=request.data, context={'request': request})
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         token, created = Token.objects.get_or_create(user=user)
-
-#         return Response({
-#             'token': token.key,
-#             'user': {
-#                 'id': user.id,
-#                 'first_name': user.first_name,
-#                 'last_name': user.last_name,
-#                 'surname': user.surname,
-#                 'email': user.email,
-#                 'phone': user.phone,
-#                 'is_active': user.is_active,
-#                 'is_superuser': user.is_superuser,
-#                 'is_staff': user.is_staff,
-#                 'date_joined': user.date_joined,
-#                 'last_login': user.last_login
-#             },
-#         })
-
 class AuthenticateView(APIView):
-    serializer_class= CustomTokenSerializer
+    serializer_class= AuthTokenSerializer
     permission_classes = [AllowAny]
     throttle_classes = [AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.user
         
         response= {
             'access': serializer.validated_data['access'],
@@ -75,8 +44,6 @@ class AuthenticateView(APIView):
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
-
-
 
 class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all()

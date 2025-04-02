@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.serializers import TokenObtainSerializer, TokenObtainPairSerializer
 from django.conf import settings
 
 
@@ -52,7 +52,7 @@ class PasswordUpdateSerializer(serializers.ModelSerializer):
         model=User
         fields=["old_password", "new_password"]
 
-class AuthTokenSerializer(serializers.Serializer):
+class AuthTokenSerializer(TokenObtainPairSerializer):
     email = serializers.EmailField(label=('Email'), write_only=True)
     password = serializers.CharField(
         label=('Password'),
@@ -60,35 +60,12 @@ class AuthTokenSerializer(serializers.Serializer):
         style={'input_type': 'password'},
         write_only=True
     )
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-
-        if email and password:
-            user = authenticate(request=self.context.get('request'), email=email, password=password)
-
-            if not user:
-                raise serializers.ValidationError({"message":"Unable to login with provided credentials"}, code="authorization")
-        else:
-            raise serializers.ValidationError({"message":"Both email and password are required"}, code="authorization")
-        
-        attrs['user'] = user
-        return attrs
-    
-class CustomTokenSerializer(TokenObtainSerializer):
-    email = serializers.EmailField(label=('Email'), write_only=True)
-    password = serializers.CharField(
-        label=('Password'),
-        trim_whitespace=False,
-        style={'input_type': 'password'},
-        write_only=True
-    )
+    username_field='email'
 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email']=self.fields.pop('username')
+        self.fields[self.username_field]=serializers.EmailField(label=('Email'), write_only=True)
 
     
     def get_token(cls, user):
@@ -97,8 +74,8 @@ class CustomTokenSerializer(TokenObtainSerializer):
         token['is_superuser']=user.is_superuser
         token['is_staff']=user.is_staff
         token['is_active']=user.is_active
-        token['user_id']=str(user.id)
-        token['services']=user.allowed_services
+        token['user_id']=user.id
+        # token['services']=settings.SIMPLE_JWT['']
         token['iss']=settings.SIMPLE_JWT['ISSUER']
         token['aud']=settings.SIMPLE_JWT['AUDIENCE']
 

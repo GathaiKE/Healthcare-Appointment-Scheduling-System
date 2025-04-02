@@ -1,31 +1,31 @@
-POST http://127.0.0.1:8000/api/users/register/
+POST http://127.0.0.1:8000/auth/users/register/
 Content-Type: application/json
 
 {
     "first_name":"Test",
-    "last_name":"User",
-    "surname":"Third",
-    "email":"ttu@gmail.com",
-    "password":"Admin@@1",
-    "phone":"254712121222"
+    "last_name":"Patient",
+    "surname":"first",
+    "email":"ftp@gmail.com",
+    "password":"Patient@@1",
+    "phone":"254700000000"
 }
 
 ###
-POST http://127.0.0.1:8000/api/users/login/
+POST http://127.0.0.1:8000/auth/users/login/
 Content-Type: application/json
 
 {
-    "email":"ttu@gmail.com",
+    "email":"briannjeri9@gmail.com",
     "password": "Admin@@1"
 }
 
 ###
-GET http://127.0.0.1:8000/api/users/
+GET http://127.0.0.1:8000/auth/users/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNTkwNTQyLCJpYXQiOjE3NDM1ODg3NDIsImp0aSI6IjI1NjY5NWZmMGZlYTQzMDdhNTY1NzExYjhmOGNhZjI5IiwidXNlcl9pZCI6ImZlMGViMmYyLWY2MjItNGQzNS1hZThhLTNjNGU0Mzk3ZDBjOSIsImlzX3N1cGVydXNlciI6dHJ1ZSwiaXNfc3RhZmYiOnRydWUsImlzX2FjdGl2ZSI6dHJ1ZSwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIiwibm90aWZpY2F0aW9uc19zZXJ2aWNlIiwicGF0aWVudF9zZXJ2aWNlIl19.EuvMhGB4VpNGsR3ZqaxPm4P_jnr3pwR_joVJXKqJGD9ZCm5uXZd2ljxGYPx1GUJTnyot-tDrNtqiFCN2HPOS7Sk4SG4bV5pSOThXpwYEYNPiCxwEFUiqI3xo-tMUgT4O_md0CdYIp4MGKH_trja7E0Iij2m5iNHf2D59Br753mfdtDD6_wQm9UBvq0T5agkAyvgXE_XdIC6mOJme3sORY6g0ZLLJDxDwqxpaeIYTSyLdl8pz2JOLPWSaeD0FvWYvOVX6EwGwrh__SqlndtIR-OR0ZTRGB5i2yKTk_Ib61oO2vDZK_-7FI9DZL5n3d8HuxWr7-fiP2W-qT1V9AbOHqA
 
 ###
-PUT  http://127.0.0.1:8000/api/users/15/
+PUT  http://127.0.0.1:8000/auth/users/15/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
@@ -38,22 +38,22 @@ Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 }
 
 ###
-DELETE http://127.0.0.1:8000/api/users/11/
+DELETE http://127.0.0.1:8000/auth/users/11/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
-GET http://127.0.0.1:8000/api/users/11/
+GET http://127.0.0.1:8000/auth/users/11/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
-GET http://127.0.0.1:8000/api/users/me/
+GET http://127.0.0.1:8000/auth/users/me/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 ###
-PUT http://127.0.0.1:8000/api/users/me/password/
+PUT http://127.0.0.1:8000/auth/users/me/password/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
@@ -63,11 +63,19 @@ Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 }
 
 ###
-GET http://127.0.0.1:8000/api/users/status/15/
+GET http://127.0.0.1:8000/auth/users/status/15/
 Content-Type: application/json
 Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
 
 {
     "is_staff": true,
     "is_active": true
+}
+
+###
+POST http://127.0.0.1:8001/patients/
+Content-Type: application/json
+
+{
+    "user_ref_id":"ef386ba3-2663-497f-8450-6974ca630bd8"
 }

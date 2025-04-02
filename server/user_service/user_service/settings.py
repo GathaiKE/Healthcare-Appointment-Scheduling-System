@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'users',
+    'app',
     'rest_framework.authtoken'
 ]
 
@@ -97,7 +97,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL="users.User"
+AUTH_USER_MODEL="app.User"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
     {
-        'NAME' : 'users.validators.PasswordValidator'
+        'NAME' : 'app.validators.PasswordValidator'
     }
 ]
 
@@ -124,8 +124,7 @@ AUTH_PASSWORD_HASHERS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -135,7 +134,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '5/hour',
+        'anon': '10/hour',
         'user': '100/hour'
     }
 }
@@ -144,18 +143,19 @@ AUTHENTICATED_BACKENDS=[
     'django.auth.backends.ModelBackend'
 ]
 
+
 SIMPLE_JWT ={
-    'TOKEN_OBTAIN_SERIALIZER':'users.serializers.CustomTokenSerializer',
+    'TOKEN_OBTAIN_SERIALIZER':'app.serializers.CustomTokenSerializer',
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ALGORITHM': 'RS256',
-    'SIGNING_KEY': env('JWT_PRIVATE_KEY'),
-    'VERIFYING_KEY': env('JWT_PUBLIC_KEY'),
+    'SIGNING_KEY': open('private.pem').read(),
+    'VERIFYING_KEY': open('public.pem').read(),
     'AUTH_HEADER_TYPES': ('Bearer','Token'),
     'ISSUER': 'user_service',
     'AUDIENCE': ['appointment_service', 'doctor_service', 'medical_records_service', 'notifications_service', 'patient_service'],
-    'USER_ID_FIELD': 'id'
-
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM':'user_id'
 }
 
 # Internationalization

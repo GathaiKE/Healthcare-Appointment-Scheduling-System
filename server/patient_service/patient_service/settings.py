@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    }
 ]
 
 
@@ -134,11 +134,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer', 'Token'),
-    'VERIFYING_KEY': env('JWT_PUBLIC_KEY'),
-    'ALGORITHM': 'RS256',
+    'VERIFYING_KEY': open('public.pem').read(),
+    'ALGORITHM': 'HS256',
     'ISSUER': 'user_service',
     'AUDIENCE': 'patient_service'
 }

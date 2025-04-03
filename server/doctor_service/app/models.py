@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 
-class PatientManager(BaseUserManager):
+class DoctorManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("Email is required")
@@ -13,29 +13,23 @@ class PatientManager(BaseUserManager):
         
         return user
     
-    # def create_superuser(self, email, password, **extra_fields):
-    #     extra_fields.setdefault('is_staff',True)
-    #     extra_fields.setdefault('is_superuser',True)
-    #     return self.create_user(email, password, **extra_fields)
-
-class InsuranceProvider(models.Model):
+class Specialization(models.Model):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
-    name=models.CharField(blank=False, max_length=200)
-    profile=models.CharField(max_length=200, null=True)
+    title=models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return self.title
 
-class Patient(AbstractUser):
+class Doctor(AbstractUser):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=12, unique=True, blank=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=12, unique=True, blank=True)
     id_number=models.CharField(max_length=100, blank=False)
     profile=models.CharField(max_length=200, null=True)
-    insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE)
+    specialization=models.ForeignKey(Specialization, on_delete=models.CASCADE)
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
     username = None
@@ -43,26 +37,27 @@ class Patient(AbstractUser):
     USERNAME_FIELD='email'
     REQUIRED_FIELDS=[]
 
-    objects = PatientManager()
+    objects = DoctorManager()
 
     def __str__ (self):
         return f"{self.first_name or ''} {self.last_name or ''} {self.surname or ''}"
     
-class Doctor(models.Model):
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    name=models.CharField(max_length=200, null=False, blank=False)
-    reference_id=models.CharField(max_length=200, null=False, blank=False)
+class Patient(models.Model):
+    id=models.UUIDField(primary_key=True, unique=True, editable=False, default=uuid.uuid4)
+    name=models.CharField(max_length=200)
+    patient_ref=models.CharField(max_length=200)
+    record_ref=models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
-class PatientVisits(models.Model):
-    id=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+class DoctorPatient(models.Model):
+    id=models.UUIDField(primary_key=True, unique=True, editable=False, default=uuid.uuid4)
     patient=models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor=models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    record_id=models.CharField(max_length=100, blank=False, null=False)
-    created_at=models.DateTimeField(auto_now_add=True)
-    updated_at=models.DateTimeField(auto_now=True)
+
 
     def __str__(self):
-        return f"Visit to {self.doctor} by {self.patient}"
+        return f"Patient: {self.patient} - Doctor: {self.doctor}"
+
+

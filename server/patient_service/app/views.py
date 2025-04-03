@@ -10,3 +10,6 @@ class CreatePatientView(generics.CreateAPIView):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
+class PatientsListView(generics.ListAPIView):
+    queryset=[]
+    serializer_class=PatientSerializer

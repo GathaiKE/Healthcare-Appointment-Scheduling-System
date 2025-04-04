@@ -28,14 +28,14 @@ class InsuranceProvider(models.Model):
 
 class Patient(AbstractUser):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, default='email@email.com')
     phone = models.CharField(max_length=12, unique=True, blank=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
-    id_number=models.CharField(max_length=100, blank=False)
+    id_number=models.CharField(max_length=100, blank=False, default='123', unique=True)
     profile=models.CharField(max_length=200, null=True)
-    insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE)
+    insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE, null=True)
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
     username = None

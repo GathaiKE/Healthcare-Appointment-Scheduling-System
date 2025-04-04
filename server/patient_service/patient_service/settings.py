@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
-from pathlib import Path
 import os
 import environ
+from pathlib import Path
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,15 +22,13 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(os.path.join(ROOT_DIR, '.env'))
 
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
-
 ALLOWED_HOSTS = []
 
 
@@ -44,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'app'
+    'app',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -55,7 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware'
 ]
+
 
 ROOT_URLCONF = 'patient_service.urls'
 
@@ -86,9 +87,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('PG_PATIENTS_DATABASE'),
         'PORT': env('PG_PORT'),
-        'USER':env('PG_USER'),
-        'HOST': env('PG_HOST'),
-        'PASSWORD': env('PG_PASSWORD')
+        'USER': env('PG_USER'),
+        'PASSWORD': env('PG_PASSWORD'),
+        'HOST': env('PG_HOST')
     }
 }
 
@@ -96,6 +97,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL="app.Patient"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,9 +110,53 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME' : 'app.validators.PasswordValidator'
     }
 ]
 
+AUTH_PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.headers.PBKDF2PasswordHasher'
+]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/hour',
+        'user': '100/hour'
+    }
+}
+
+AUTHENTICATED_BACKENDS=[
+    'django.auth.backends.ModelBackend'
+]
+
+
+SIMPLE_JWT ={
+    'TOKEN_OBTAIN_SERIALIZER':'app.serializers.AuthSerializer',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ALGORITHM': 'RS256',
+    'SIGNING_KEY': open('private.pem').read(),
+    'VERIFYING_KEY': open('public.pem').read(),
+    'AUTH_HEADER_TYPES': ('Bearer','Token'),
+    'ISSUER': 'user_service',
+    'AUDIENCE': ['appointment_service', 'doctor_service', 'medical_records_service'],
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM':'user_id'
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -133,18 +179,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('Bearer', 'Token'),
-    'VERIFYING_KEY': open('public.pem').read(),
-    'ALGORITHM': 'HS256',
-    'ISSUER': 'user_service',
-    'AUDIENCE': 'patient_service'
-}
-
-
-REST_FRAMEWORK={
-    'DEFAULT_AUTHENTICATION_CLASSES':[
-        'app.authentication.Authenticate'
-    ]
-}

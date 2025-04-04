@@ -1,81 +1,75 @@
-POST http://127.0.0.1:8000/auth/users/register/
+POST http://127.0.0.1:8000/patients/register/
 Content-Type: application/json
 
 {
     "first_name":"Test",
     "last_name":"Patient",
-    "surname":"first",
-    "email":"ftp@gmail.com",
+    "surname":"Delete",
+    "email":"ftpd@gmail.com",
     "password":"Patient@@1",
-    "phone":"254700000000"
+    "phone":"254700000001",
+    "id_number":"12345679"
 }
 
 ###
-POST http://127.0.0.1:8000/auth/users/login/
+POST http://127.0.0.1:8000/patients/login/
 Content-Type: application/json
 
 {
-    "email":"briannjeri9@gmail.com",
-    "password": "Admin@@1"
+    "email":"ftp@gmail.com",
+    "password": "Patient@@1"
 }
 
 ###
-GET http://127.0.0.1:8000/auth/users/
+GET http://127.0.0.1:8000/patients/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNTkwNTQyLCJpYXQiOjE3NDM1ODg3NDIsImp0aSI6IjI1NjY5NWZmMGZlYTQzMDdhNTY1NzExYjhmOGNhZjI5IiwidXNlcl9pZCI6ImZlMGViMmYyLWY2MjItNGQzNS1hZThhLTNjNGU0Mzk3ZDBjOSIsImlzX3N1cGVydXNlciI6dHJ1ZSwiaXNfc3RhZmYiOnRydWUsImlzX2FjdGl2ZSI6dHJ1ZSwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIiwibm90aWZpY2F0aW9uc19zZXJ2aWNlIiwicGF0aWVudF9zZXJ2aWNlIl19.EuvMhGB4VpNGsR3ZqaxPm4P_jnr3pwR_joVJXKqJGD9ZCm5uXZd2ljxGYPx1GUJTnyot-tDrNtqiFCN2HPOS7Sk4SG4bV5pSOThXpwYEYNPiCxwEFUiqI3xo-tMUgT4O_md0CdYIp4MGKH_trja7E0Iij2m5iNHf2D59Br753mfdtDD6_wQm9UBvq0T5agkAyvgXE_XdIC6mOJme3sORY6g0ZLLJDxDwqxpaeIYTSyLdl8pz2JOLPWSaeD0FvWYvOVX6EwGwrh__SqlndtIR-OR0ZTRGB5i2yKTk_Ib61oO2vDZK_-7FI9DZL5n3d8HuxWr7-fiP2W-qT1V9AbOHqA
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 ###
-PUT  http://127.0.0.1:8000/auth/users/15/
+PUT  http://127.0.0.1:8000/patients/0a20cc04-3330-410c-9e1c-8737328d5140/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 {
-    "first_name": "Deletable",
-    "last_name": "User",
-    "surname": "Third",
-    "email": "ttu@gmail.com",
-    "phone": "254712121333"
+    "first_name": "Test",
+    "last_name": "Patient",
+    "surname": "Default",
+    "email": "ftp@gmail.com",
+    "phone": "254700000000",
+    "id_number":"12345678"
 }
 
 ###
-DELETE http://127.0.0.1:8000/auth/users/11/
+DELETE http://127.0.0.1:8000/patients/565b22b0-d334-42de-a162-bef4fd73bf1f/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 ###
-GET http://127.0.0.1:8000/auth/users/11/
+GET http://127.0.0.1:8000/patients/0a20cc04-3330-410c-9e1c-8737328d5140/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 ###
-GET http://127.0.0.1:8000/auth/users/me/
+GET http://127.0.0.1:8000/patients/me/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 ###
-PUT http://127.0.0.1:8000/auth/users/me/password/
+PUT http://127.0.0.1:8000/patients/me/password/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 {
-    "old_password":"Tester@@1",
-    "new_password":"Admin@@1"
+    "old_password":"Admin@@1",
+    "new_password":"Patient@@1"
 }
 
 ###
-GET http://127.0.0.1:8000/auth/users/status/15/
+GET http://127.0.0.1:8000/patients/status/15/
 Content-Type: application/json
-Authorization: Token 63822f9cdb700f80744bc59a6e9290c47a0a34e3
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
 
 {
     "is_staff": true,
     "is_active": true
-}
-
-###
-POST http://127.0.0.1:8001/patients/
-Content-Type: application/json
-
-{
-    "user_ref_id":"ef386ba3-2663-497f-8450-6974ca630bd8"
 }

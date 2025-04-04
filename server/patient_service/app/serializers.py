@@ -14,7 +14,7 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Patient
-        fields=['id', 'first_name', 'last_name', 'surname', 'email', 'phone', 'password', 'date_joined', 'updated_at', 'deleted_at']
+        fields=['id', 'first_name', 'last_name', 'surname', 'email', 'phone', 'id_number', 'password', 'date_joined', 'updated_at', 'deleted_at']
         read_only_fields=['id', 'created_at', 'updated_at', 'deleted_at']
 
     def create(self, validated_data):
@@ -25,12 +25,13 @@ class PatientSerializer(serializers.ModelSerializer):
             surname=validated_data['surname'],
             email=validated_data['email'],
             phone=validated_data['phone'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            id_number=validated_data['id_number']
         )
         return patient
     
     def update(self, instance, validated_data):
-        password=validated_data('password', None)
+        password=validated_data.pop('password', None)
         if password:
             instance.set_password(password)
         return super().update(instance, validated_data)

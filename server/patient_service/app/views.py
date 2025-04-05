@@ -16,7 +16,7 @@ class CreatePatientView(generics.CreateAPIView):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
-class AuthenticaeView(APIView):
+class AuthenticateView(APIView):
     serialializer_class=AuthSerializer
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
@@ -44,20 +44,20 @@ class AuthenticaeView(APIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
 class PatientsListView(generics.ListAPIView):
-    queryset=[]
+    queryset=Patient.objects.all()
     serializer_class=PatientSerializer
-    permission_classes=[IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes=[IsAuthenticated]
     throttle_classes=[AnonRateThrottle]
 
 class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Patient.objects.all()
     serializer_class=PatientSerializer
-    permission_classes=[IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
 class PasswordUpdateView(generics.UpdateAPIView):
     serializer_class=PasswordUpdateSerializer
-    permission_classes=[IsAuthenticated, IsOwnerOrAdmin]
+    permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
     def get_object(self):
@@ -65,7 +65,7 @@ class PasswordUpdateView(generics.UpdateAPIView):
     
     def update(self, request, *args, **kwargs):
         user=self.get_object()
-        serializer=self.get_serializer_class(data=request.data)
+        serializer=self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             if not user.check_password(serializer.data.get('old_password')):
@@ -76,7 +76,7 @@ class PasswordUpdateView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CurrentUserView(generics.RetrieveAPIView):
-    serializer_class=[PatientDetailView]
+    serializer_class=PatientSerializer
     permission_classes=[IsAuthenticated]
 
     def get_object(self):

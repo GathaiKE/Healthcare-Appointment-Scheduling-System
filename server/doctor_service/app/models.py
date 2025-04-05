@@ -28,7 +28,7 @@ class Doctor(AbstractUser):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=12, unique=True, blank=True)
     id_number=models.CharField(max_length=100, blank=False)
-    profile=models.CharField(max_length=200, null=True)
+    profile=models.CharField(max_length=200, null=True, blank=True)
     specialization=models.ForeignKey(Specialization, on_delete=models.CASCADE)
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
@@ -55,7 +55,6 @@ class DoctorPatient(models.Model):
     id=models.UUIDField(primary_key=True, unique=True, editable=False, default=uuid.uuid4)
     patient=models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor=models.ForeignKey(Doctor, on_delete=models.CASCADE)
-
 
     def __str__(self):
         return f"Patient: {self.patient} - Doctor: {self.doctor}"

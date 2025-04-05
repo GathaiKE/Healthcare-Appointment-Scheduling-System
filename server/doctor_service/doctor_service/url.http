@@ -1,0 +1,26 @@
+POST http://127.0.0.1:8000/doctors/register/
+Content-Type: application/json
+
+{
+    "first_name":"Test",
+    "last_name":"Doctor",
+    "surname":"First",
+    "email":"ftd@gmail.com",
+    "password":"Doctor@@1",
+    "phone":"254700000000",
+    "id_number":"12345678",
+    "specialization":"1a4f5afb-af29-4188-8518-50d4394d4a27",
+    "profile": ""
+}
+
+###
+POST http://127.0.0.1:8000/doctors/login/
+Content-Type: application/json
+
+{
+    "email":"ftd@gmail.com",
+    "password":"Doctor@@1"
+}
+
+###
+GET  http://127.0.0.1:8000/doctors/specializations/

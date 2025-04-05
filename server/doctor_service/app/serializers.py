@@ -44,6 +44,13 @@ class PasswordUpdateSerializer(serializers.ModelSerializer):
         model=Doctor
         fields=['old_password', 'new_password']
 
+class PasswordResetSerializer(serializers.ModelSerializer):
+    new_password=serializers.CharField(required=True, validators=[password_validation.validate_password])
+
+    class Meta:
+        model=Doctor
+        fields=['new_password']
+
 class AuthSerializer(TokenObtainPairSerializer):
     email=serializers.EmailField(label=('Email'), write_only=True)
     password=serializers.CharField(
@@ -65,7 +72,7 @@ class AuthSerializer(TokenObtainPairSerializer):
         token['is_superuser']=doctor.is_superuser
         token['is_staff']=doctor.is_staff
         token['is_active']=doctor.is_active
-        token['doctor_id']=str(doctor.id)
+        token['user_id']=str(doctor.id)
         token['iss']=settings.SIMPLE_JWT['ISSUER']
         token['aud']=settings.SIMPLE_JWT['AUDIENCE']
 

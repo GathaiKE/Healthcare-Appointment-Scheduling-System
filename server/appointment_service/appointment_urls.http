@@ -1,0 +1,10 @@
+POST http://127.0.0.1:8001/appointments/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTcwNjc3LCJpYXQiOjE3NDM5Njg4NzcsImp0aSI6IjZkYzhlOWVlZGY4NzQyZWI5M2JjNGUyNWQ5ZWYxM2M0IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.HlzXHslqF_q4tXkk6jZKalW6wya61R72TnzijYuOfeWwaRPdSYJFkBwRD07LjBlh11Vd7EyTTi0JMax55DndsYdRU-H0X-Piqi8ZjaO_AOLRw-Qbvp7LsuNAdgZ7zO1LBoagoybQLVVMfn5SvU7qVPHpxTwQ2iE85eaaFdn9a7ZyeOiPi8k2Q57jRQFYvQ85cW2sJyPgQhV8I8RAxUQcbu6sVEZ4daJisak7t-YHv_r-bGNICIc-JkVTreK8APL9xnw66dsn-WCTFrzyXDi1p-XlxwL01raHB5KTDlSSmx4gcjFozBqYGHviPAh1euf9yc2Wkqdl4CjhcCZZH6x8bQ
+
+{
+    "doctor_id":"0f8b44fc-e7cb-400f-8d5d-25e20a51c27d",
+    "patient_id":"0a20cc04-3330-410c-9e1c-8737328d5140",
+    "date":"2025-04-07",
+    "start_time":"10:00:00"
+}

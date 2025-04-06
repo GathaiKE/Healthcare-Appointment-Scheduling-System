@@ -75,6 +75,7 @@ class AuthSerializer(TokenObtainPairSerializer):
         token['user_id']=str(doctor.id)
         token['iss']=settings.SIMPLE_JWT['ISSUER']
         token['aud']=settings.SIMPLE_JWT['AUDIENCE']
+        token['role']='doctor'
 
         return token
     
@@ -101,7 +102,7 @@ class AuthSerializer(TokenObtainPairSerializer):
 
         return data
 
-class SpecializationSerializer(serializers.ModelSerializer):
+class SpecializationSeriaizer(serializers.ModelSerializer):
     class Meta:
         model=Specialization
         fields=['id','title']

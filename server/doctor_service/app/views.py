@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import DoctorSerializer, AuthSerializer,SpecializationSerializer, PasswordUpdateSerializer, PasswordResetSerializer
+from .serializers import DoctorSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer
 from .models import Specialization
 
 Doctor=get_user_model()
@@ -44,9 +44,9 @@ class LogInView(APIView):
             }
         }, status=status.HTTP_202_ACCEPTED)
     
-class AddSpecialization(generics.ListCreateAPIView):
+class SpecializationView(generics.ListCreateAPIView):
     queryset=Specialization.objects.all()
-    serializer_class=SpecializationSerializer
+    serializer_class=SpecializationSeriaizer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 

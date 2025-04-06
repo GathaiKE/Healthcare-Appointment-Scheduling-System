@@ -149,10 +149,10 @@ SIMPLE_JWT ={
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ALGORITHM': 'RS256',
-    'SIGNING_KEY': open('private.pem').read(),
-    'VERIFYING_KEY': open('public.pem').read(),
+    'SIGNING_KEY': open('patient_private.pem').read(),
+    'VERIFYING_KEY': open('patient_public.pem').read(),
     'AUTH_HEADER_TYPES': ('Bearer','Token'),
-    'ISSUER': 'user_service',
+    'ISSUER': 'patient_service',
     'AUDIENCE': ['appointment_service', 'doctor_service', 'medical_records_service'],
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM':'user_id'

@@ -68,9 +68,10 @@ class AuthSerializer(TokenObtainPairSerializer):
         token['is_superuser']=patient.is_superuser
         token['is_staff']=patient.is_staff
         token['is_active']=patient.is_active
-        token['patient_id']=str(patient.id)
+        token['user_id']=str(patient.id)
         token['iss']=settings.SIMPLE_JWT['ISSUER']
         token['aud']=settings.SIMPLE_JWT['AUDIENCE']
+        token['role']='patient'
 
         return token
 

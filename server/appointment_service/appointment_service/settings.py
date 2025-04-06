@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os, environ
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware'
 ]
 
 ROOT_URLCONF = 'appointment_service.urls'
@@ -129,3 +132,41 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'app.authentication.JWTAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_THROTTLe_CLASSES':[
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES':{
+        'anon':'100/hour',
+        'user':'2000/hour',
+        'patient':'1000/hour',
+        'doctor':'2000/hour'
+    }
+}
+SIMPLE_JWT = {
+    'ISSUER':['patient_service', 'doctor_service'],
+    'AUDIENCE':'appointment_service',
+    'DOCTOR_VERIFYING_KEY': open('doctor_public.pem').read(),
+    'PATIENT_VERIFYING_KEY': open('patient_public.pem').read(),
+    'ALGORITHM':'RS256',
+    'AUTH_HEADER_TYPES':('Bearer', 'Token'),
+}
+
+PUBLIC_KEYS={
+    'patient_service': SIMPLE_JWT['PATIENT_VERIFYING_KEY'],
+    'doctor_service':SIMPLE_JWT['DOCTOR_VERIFYING_KEY']
+}
+
+AUTHENTICATION_BACKENDS=[
+    'app.authentication.JWTAuthentication'
+]
+

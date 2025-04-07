@@ -35,6 +35,13 @@ class RolePermission(BasePermission):
         
 class IsPatientDoctor(RolePermission):
     allowed_roles={'patient', 'doctor'}
-    min_role_level=RolePermission.ROLE_HIERACHY['patient']
+    # min_role_level=RolePermission.ROLE_HIERACHY['patient']
 
-    
+class IsPatient(RolePermission):
+    allowed_roles={'patient'}
+    # min_role_level=RolePermission.ROLE_HIERACHY['patient']
+
+
+class IsDoctor(RolePermission):
+    allowed_roles={'doctor'}
+    min_role_level=RolePermission.ROLE_HIERACHY['doctor']

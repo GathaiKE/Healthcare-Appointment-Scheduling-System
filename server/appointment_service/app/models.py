@@ -8,6 +8,9 @@ class Slot(models.Model):
     date=models.DateField()
     start_time=models.TimeField()
     end_time=models.TimeField()
+
+    def __str__(self):
+        return f"Date:{self.date} From: {self.start_time} To: {self.end_time}"
     
 
 class Appointment(models.Model):
@@ -21,13 +24,13 @@ class Appointment(models.Model):
     patient_id=models.CharField(max_length=100, blank=False)
     hospital_id=models.CharField(max_length=100, blank=True)
     slot=models.ForeignKey(Slot, on_delete=models.CASCADE)
-    status=models.IntegerField(Status.choices, default=Status.PENDING)
+    status=models.IntegerField(choices=Status.choices, default=Status.PENDING)
     created_at=models.DateTimeField(blank=False, auto_now_add=True)
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(blank=True, null=True)
 
-    def __str__(self):
-        return f"Appointment {self.id} - Status: {self.get_status_display()}"
+    # def __str__(self):
+    #     return f"Appointment {self.id} - Status: {self.get_status_display()}"
 
 
 class DoctorCalender(models.Model):

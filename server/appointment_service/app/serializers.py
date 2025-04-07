@@ -3,13 +3,21 @@ from datetime import datetime, timedelta
 
 from .models import Appointment, Slot
 
+
+class SlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Slot
+        fields=['id', 'doctor_id', 'date', 'start_time', 'end_time']
+
 class AppointmentSeriaizer(serializers.ModelSerializer):
-    doctor_id=serializers.CharField(write_only=True)
-    start_time=serializers.TimeField(write_only=True)
-    date=serializers.DateField(write_only=True)
+    status=serializers.CharField(
+        source='get_status_display',
+        read_only=True
+    )
+    slot=SlotSerializer(read_only=True)
     class Meta:
         model=Appointment
-        fields=['id', 'doctor_id', 'patient_id', 'hospital_id', 'date', 'start_time', 'status', 'created_at', 'updated_at', 'deleted_at']
+        fields=['id', 'patient_id', 'hospital_id', 'slot', 'status', 'created_at', 'updated_at', 'deleted_at']
         read_only_fields=['id', 'created_at', 'status', 'updated_at', 'deleted_at']
 
     def slot_available(self, doctor_id, date ,start_time, end_time):
@@ -41,11 +49,15 @@ class AppointmentSeriaizer(serializers.ModelSerializer):
 
             appointment=Appointment.objects.create(
                 patient_id=validated_data['patient_id'],
-                # hospital_id=validated_data['hospital_id'] if validated_data['hospital_id'] else '',
                 status=0,
                 slot=slot
             )
             return appointment
         else:
             raise serializers.ValidationError("The suggested time overlaps with an existing booking")
-    
+
+class AppointmentStatusSerializer(serializers.ModelSerializer):
+    status=serializers.IntegerField(required=True)
+    class Meta:
+        model=Appointment
+        fields=['status']

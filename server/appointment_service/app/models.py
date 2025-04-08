@@ -12,14 +12,20 @@ class Slot(models.Model):
     def __str__(self):
         return f"Date:{self.date} From: {self.start_time} To: {self.end_time}"
     
+class DoctorCalender(models.Model):
+    id=models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    doctor_id=models.CharField(blank=False, unique=True)
+    shift_start=models.TimeField(default='09:00:00')
+    shift_end=models.TimeField(default='17:00:00')
+    break_start=models.TimeField(default='13:00:00')
+    break_duration=models.IntegerField(default=1)
 
 class Appointment(models.Model):
     class Status(models.IntegerChoices):
         PENDING=0, 'pending'
         CONFIRMED=1, 'confirmed'
-        CANCELLED=2, 'cancelled'
+        DONE=2, 'done'
         MISSED=3, 'missed'
-        DONE=4, 'done'
     id=models.UUIDField(primary_key=True,unique=True, editable=False, default=uuid.uuid4)
     patient_id=models.CharField(max_length=100, blank=False)
     hospital_id=models.CharField(max_length=100, blank=True)
@@ -29,9 +35,4 @@ class Appointment(models.Model):
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(blank=True, null=True)
 
-    # def __str__(self):
-    #     return f"Appointment {self.id} - Status: {self.get_status_display()}"
 
-
-class DoctorCalender(models.Model):
-    pass

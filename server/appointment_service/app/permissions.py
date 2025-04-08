@@ -33,15 +33,24 @@ class RolePermission(BasePermission):
                 effective_roles.add(role_name)
         return effective_roles
         
-class IsPatientDoctor(RolePermission):
-    allowed_roles={'patient', 'doctor'}
-    # min_role_level=RolePermission.ROLE_HIERACHY['patient']
-
 class IsPatient(RolePermission):
     allowed_roles={'patient'}
-    # min_role_level=RolePermission.ROLE_HIERACHY['patient']
-
+    min_role_level=RolePermission.ROLE_HIERACHY['patient']
 
 class IsDoctor(RolePermission):
     allowed_roles={'doctor'}
     min_role_level=RolePermission.ROLE_HIERACHY['doctor']
+
+class IsPatientOrDoctor(RolePermission):
+    allowed_roles={'patient', 'doctor'}
+    min_role_level=RolePermission.ROLE_HIERACHY['patient']
+
+class IsOwnerOrDoctor(RolePermission):
+    allowed_roles={'patient', 'doctor'}
+    min_role_level=RolePermission.ROLE_HIERACHY['patient']
+
+    def has_object_permission(self, request, view, obj):
+        user=request.user
+        if user.role == 'patient':
+            return obj.patient_id == user.id
+        return super().has_object_permission(request, view, obj)

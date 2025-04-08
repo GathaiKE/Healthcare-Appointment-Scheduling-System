@@ -6,7 +6,7 @@ class Test(models.Model):
     name=models.CharField(max_length=100, blank=False, null=False)
     result=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    updated_ad=models.DateTimeField(auto_add=True, blank=True)
+    updated_ad=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -17,7 +17,7 @@ class MedicalRecord(models.Model):
     tests=models.ManyToManyField(Test, related_name="medical_records")
     prognosis=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    updated_ad=models.DateTimeField(auto_add=True, blank=True)
+    updated_ad=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

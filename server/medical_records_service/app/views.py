@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+# Authenticate
+# create record
+# fetch record
+# update record
+# create test
+# update test

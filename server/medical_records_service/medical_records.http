@@ -1,0 +1,44 @@
+POST http://127.0.0.1:8003/medical-records/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MzE0NzczLCJpYXQiOjE3NDQzMTExNzMsImp0aSI6IjkwMzFmMjZkMzAzMjQ0ZWNhZWEyODdkYzJmYzg2ODQ2IiwidXNlcl9pZCI6IjBmOGI0NGZjLWU3Y2ItNDAwZi04ZDVkLTI1ZTIwYTUxYzI3ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.RsYDszzMzdX3WarKP7z7VNrY-QprF-27ijsgZZlXe53Vc4YRF2WgVr5P05cuFcZ4l941UFrFPJvN4c7TY_YpLcbLfWoBTPuVpbmzesjyHg-ItmqNXlz_CyPIZMw9VRJIvQoBlZFKw3asP-OdPIkvpMPjhE0H8aCs4Euxpl3C3yB--573KpRY0f_ghagsIxg2Rr00qtC9F8diQnSuAEm127Hxi2b5zXOd7vld_qf6N0Ge_xAieEL-FYtXr8FTh6ovH4zFOOtdlV0tYPik-_pq9yeBNNiRxpmEeR_vjWf0noLmlrUoexJPeLUuxwHA1-JWgtH1jRilN2t1sPGQ0u8wpw
+
+{
+    "prognosis":"Non-Acid reflux",
+    "patient_id":"0a20cc04-3330-410c-9e1c-8737328d5140",
+    "tests":[
+        {
+            "name":"H-Pylori",
+            "result":"Acte reflux of stomac acids and high hpv levels"
+        }
+    ]
+}
+
+###
+GET http://127.0.0.1:8003/medical-records/doctor/
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MzE0NzczLCJpYXQiOjE3NDQzMTExNzMsImp0aSI6IjkwMzFmMjZkMzAzMjQ0ZWNhZWEyODdkYzJmYzg2ODQ2IiwidXNlcl9pZCI6IjBmOGI0NGZjLWU3Y2ItNDAwZi04ZDVkLTI1ZTIwYTUxYzI3ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.RsYDszzMzdX3WarKP7z7VNrY-QprF-27ijsgZZlXe53Vc4YRF2WgVr5P05cuFcZ4l941UFrFPJvN4c7TY_YpLcbLfWoBTPuVpbmzesjyHg-ItmqNXlz_CyPIZMw9VRJIvQoBlZFKw3asP-OdPIkvpMPjhE0H8aCs4Euxpl3C3yB--573KpRY0f_ghagsIxg2Rr00qtC9F8diQnSuAEm127Hxi2b5zXOd7vld_qf6N0Ge_xAieEL-FYtXr8FTh6ovH4zFOOtdlV0tYPik-_pq9yeBNNiRxpmEeR_vjWf0noLmlrUoexJPeLUuxwHA1-JWgtH1jRilN2t1sPGQ0u8wpw
+
+###
+GET http://127.0.0.1:8003/medical-records/5c0f69eb-40f1-47b9-a221-ea88c194684a/
+
+###
+PUT http://127.0.0.1:8003/medical-records/5c0f69eb-40f1-47b9-a221-ea88c194684a/
+Content-Type: application/json
+
+{
+    "prognosis":"Severe Amoebic Dysentry",
+    "tests":[
+        {
+            "name":"Stool Test",
+            "result":"severe case of amoeba infestation in the stool"
+        }
+    ]
+}
+
+###
+PUT http://127.0.0.1:8003/medical-records/test/aedab89b-f251-4a88-b430-6cfbce694f32/
+Content-Type: application/json
+
+{
+    "name":"HEP Test",
+    "result":"severe case of amoeba infestation in the stool"
+}

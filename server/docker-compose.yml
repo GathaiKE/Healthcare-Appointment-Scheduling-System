@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
     ports:
-      - "5433:5432"
+      - "5433:${PG_PORT}"
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -74,33 +74,12 @@ services:
     depends_on:
       - database
 
-  notifications_service:
-    build:
-      context: .
-      dockerfile: ./notifications_service/DockerFile
-    container_name: notifications_service
-    command: python manage.py runserver 0.0.0.0:8003
-    restart: always
-    environment:
-      - DJANGO_SETTINGS_MODULE=notifications_service.settings
-      - DB_NAME=${PG_NOTIFICATIONS_DATABASE}
-      - DB_HOST=${PG_HOST}
-      - DB_PASSWORD=${PG_PASSWORD}
-      - DB_USER=${PG_USER}
-      - DB_PORT=${PG_PORT}
-    volumes:
-      - .:/app
-    ports:
-      - "8003:8003"
-    depends_on:
-      - database
-    
   patient_service:
     build:
       context: .
       dockerfile: ./patient_service/DockerFile
     container_name: patient_service
-    command: python manage.py runserver 0.0.0.0:8004
+    command: python manage.py runserver 0.0.0.0:8003
     restart: always
     environment:
       - DJANGO_SETTINGS_MODULE=patient_service.settings
@@ -113,27 +92,6 @@ services:
       - .:/app
     ports:
       - "8004:8004"
-    depends_on:
-      - database
-
-  user_service:
-    build:
-      context: .
-      dockerfile: ./user_service/DockerFile
-    container_name: user_service
-    command: python manage.py runserver 0.0.0.0:8005
-    restart: always
-    environment:
-      - DJANGO_SETTINGS_MODULE=user_service.settings
-      - DB_NAME=${PG_USERS_DATABASE}
-      - DB_HOST=${PG_HOST}
-      - DB_PASSWORD=${PG_PASSWORD}
-      - DB_USER=${PG_USER}
-      - DB_PORT=${PG_PORT}
-    volumes:
-      - .:/app
-    ports:
-      - "8005:8005"
     depends_on:
       - database
 

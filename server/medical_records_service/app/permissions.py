@@ -21,7 +21,6 @@ class RolePermission(BasePermission):
         if not request.user or isinstance(request.user, AnonymousUser):
             logger.warning("Unauthenticated access attempt")
             return self._handle_public_access()
-        
 
         role=getattr(request.user, "role", "public")
 
@@ -35,6 +34,34 @@ class RolePermission(BasePermission):
         
         if self.min_role_level is not None:
             return self._has_hierarchy_permission(role)
+        
+        return False
+    
+
+    def has_object_permission(self, request, view, obj):
+        if not request.user or isinstance(request.user, AnonymousUser):
+            logger.warning("Unauthenticated access attempt")
+            return self._handle_public_access()
+
+        if request.user.role == 'doctor':
+            return True
+        
+        if request.user.role == 'patient':
+            patient_id=getattr(request.user, 'id', None)
+
+            if not patient_id:
+                logger.error("Patient id not found")
+                return False
+            
+            ownership=getattr(obj, 'prefetched_ownership', [None])[0]
+            if not ownership:
+                try:
+                    ownership=obj.record_ownership_set.first()
+                except AttributeError:
+                    logger.error("Medical record missing ownership relation")
+                    return False
+                
+            return str(ownership.patient_id) == str(patient_id)
         
         return False
     
@@ -60,22 +87,6 @@ class RolePermission(BasePermission):
             r for r, level in self.ROLE_HIERACHY.items()
             if level <= user_role_level
         )
-    
-    def has_object_permission(self, request, view, obj):
-        if not self.has_permission(request, view):
-            return False
-        
-        try:
-            owner_field=getattr(view, 'owner_field', 'user')
-            owner = getattr(obj, owner_field)
-
-            if hasattr(owner, 'id'):
-                return owner.id == request.user.id
-            return owner ==request.user.id
-
-        except AttributeError as e:
-            logger.error(f"Ownership check failed: {e}")
-            return False
 
 class IsOwnerOrDoctor(RolePermission):
     def __init__(self):
@@ -99,3 +110,13 @@ class IsDoctor(RolePermission):
 
     def get_allowed_roles(self):
         return {'doctor'}
+
+
+class IsPatient(RolePermission):
+    def __init__(self):
+        super().__init__()
+        self.allowed_roles={'patient'}
+        self.allowed_roles=self.ROLE_HIERACHY['patient']
+
+    def get_allowed_roles(self):
+        return {'patient'}

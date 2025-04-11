@@ -51,3 +51,22 @@ class RecordSerializer(serializers.ModelSerializer):
 
         return instance
     
+class RecordOwnershipSerializer(serializers.ModelSerializer):
+    tests=TestSerializer(read_only=True, many=True)
+    patient_id=serializers.SerializerMethodField()
+    doctor_id=serializers.SerializerMethodField()
+
+    class Meta:
+        model=MedicalRecord
+        fields=['id', 'prognosis', 'tests', 'doctor_id', 'patient_id', 'created_at','updated_at', 'deleted_at']
+        read_only_fields=['id', 'created_at','updated_at', 'deleted_at']
+
+    def get_doctor_id(self, obj):
+        ownership=getattr(obj, 'prefetched_ownership', [])
+
+        return ownership[0].doctor_id if ownership else None
+        
+    def get_patient_id(self, obj):
+        ownership=getattr(obj, 'prefetched_ownership', None)
+
+        return ownership[0].patient_id if ownership else None

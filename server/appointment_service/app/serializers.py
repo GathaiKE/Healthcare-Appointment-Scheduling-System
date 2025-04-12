@@ -67,7 +67,7 @@ class CreateAppointmentSeriaizer(serializers.ModelSerializer):
         shift_end=doctor_shift.shift_end
         shift_break_start=doctor_shift.break_start
         shift_break_duration=doctor_shift.break_duration
-        shift_break_end=shift_break_start+timedelta(hours=shift_break_duration)
+        shift_break_end=shift_break_start+timedelta(minutes=shift_break_duration)
 
         if end_time<shift_start or end_time > shift_end:
             return False

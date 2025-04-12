@@ -97,4 +97,3 @@ class AuthSerializer(TokenObtainPairSerializer):
         data['access']=str(refresh.access_token)
 
         return data
-

@@ -16,7 +16,7 @@ POST http://127.0.0.1:8000/patients/login/
 Content-Type: application/json
 
 {
-    "email":"ftp@gmail.com",
+    "email":"ftpd@gmail.com",
     "password": "Patient@@1"
 }
 

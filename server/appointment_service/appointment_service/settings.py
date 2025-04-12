@@ -170,3 +170,4 @@ AUTHENTICATION_BACKENDS=[
     'app.authentication.JWTAuthentication'
 ]
 
+CELERY_BROKER_URL=ENV('CELERY_BROKER_URL')

@@ -1,16 +1,16 @@
-POST http://127.0.0.1:8000/doctors/register/
+POST http://127.0.0.1:8002/doctors/register/
 Content-Type: application/json
 
 {
-    "first_name":"Test",
+    "first_name":"Celery",
     "last_name":"Doctor",
     "surname":"Delete",
-    "email":"lastd@gmail.com",
+    "email":"celeryd@gmail.com",
     "password":"Doctor@@1",
-    "phone":"254700002222",
-    "id_number":"12345678",
+    "phone":"254700004444",
+    "id_number":"12345687",
     "specialization":"3ed841e9-5ff6-48f6-bce9-2decdacf3e4e",
-    "profile": "random profile"
+    "profile": "celery code"
 }
 
 ###
@@ -18,7 +18,7 @@ POST http://127.0.0.1:8002/doctors/login/
 Content-Type: application/json
 
 {
-    "email":"ftd@gmail.com",
+    "email":"celeryd@gmail.com",
     "password":"Doctor@@1"
 }
 

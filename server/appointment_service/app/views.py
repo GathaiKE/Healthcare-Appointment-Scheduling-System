@@ -20,8 +20,6 @@ class RetrieveAppointmentView(generics.RetrieveAPIView):
     throttle_classes=[UserRateThrottle]
     lookup_field='pk'
 
-
-
 class CancelAppointmentView(generics.UpdateAPIView):
     serializer_class=AppointmentStatusSerializer
     permission_classes=[IsDoctor]

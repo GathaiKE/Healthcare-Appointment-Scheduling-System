@@ -10,7 +10,7 @@ def cancel_patients_appointments(patient_id):
         appointment.delete()
         
 
-@shared_task(name="create_doctor_calender")
+@shared_task(name="appointment_service.tasks.create_doctor_calender")
 def create_doctor_calender(doctor_id, shift_start=None, shift_end=None, break_start=None, break_duration=None):
     DoctorCalender.objects.create(
         doctor_id=doctor_id,

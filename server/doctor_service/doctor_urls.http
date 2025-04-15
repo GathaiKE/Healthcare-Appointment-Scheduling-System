@@ -5,10 +5,10 @@ Content-Type: application/json
     "first_name":"Celery",
     "last_name":"Doctor",
     "surname":"Delete",
-    "email":"celeryd@gmail.com",
+    "email":"celeryworker@gmail.com",
     "password":"Doctor@@1",
-    "phone":"254700004444",
-    "id_number":"12345687",
+    "phone":"254744444444",
+    "id_number":"11111111",
     "specialization":"3ed841e9-5ff6-48f6-bce9-2decdacf3e4e",
     "profile": "celery code"
 }

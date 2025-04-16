@@ -32,7 +32,7 @@ class CancelAppointmentView(generics.UpdateAPIView):
             return Response({"detail":f"Appointment has been cancelled"})
         except Appointment.DoesNotExist:
             return Response({"detail":"Appointment was not found"}, status=status.HTTP_404_NOT_FOUND)
-        
+      
 class PatientAppointmentsView(generics.ListAPIView):
     serializer_class=FetchAppointmentSeriaizer
     permission_classes=[IsPatient]

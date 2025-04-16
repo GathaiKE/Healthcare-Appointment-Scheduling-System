@@ -1,10 +1,32 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from jwt import decode, PyJWTError
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AbstractBaseUser
 from django.conf import settings
-
 from rest_framework.exceptions import AuthenticationFailed
+
+
+class ServiceUser(AbstractBaseUser):
+    class Meta:
+        managed=False
+
+    def __init__(self, user_id, role, is_staff, is_speruser, is_active):
+        self.id=user_id
+        self.role=role
+        self.is_staff=is_staff
+        self.is_superuser=is_speruser
+        self.is_active=is_active
+
+        @property
+        def is_authenticated(self):
+            return True
+
+        @property
+        def is_anonymous(self):
+            return False
+        
+        USERNAME_FIELD='id'
+        REQUIRED_FIELDS=[]
 
 class JWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
@@ -55,12 +77,12 @@ class JWTAuthentication(JWTAuthentication):
             raise InvalidToken(f"Invalid signature {str(e)}") from e
     
     def get_user(self, validated_payload):
-        user=AnonymousUser()
-        user.id=validated_payload.get("user_id")
-        user.role=validated_payload.get('role')
-        user.is_admin=validated_payload.get('is_staff')
-        user.is_active=validated_payload.get('is_active')
-        return user
+        return ServiceUser(
+            user_id=validated_payload.get("user_id"),
+            role=validated_payload.get('role'),
+            is_admin=validated_payload.get('is_staff'),
+            is_active=validated_payload.get('is_active')
+        )
 
         
 

@@ -2,12 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth import password_validation, get_user_model, authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
-# from celery import Celery
-
-# app=Celery('doctor_service', broker=settings.CELERY_BROKER_URL)
 
 from .models import Specialization
-from .signals import create_schedue
+from .signals import create_schedue, unlink_records
 
 Doctor=get_user_model()
 
@@ -31,10 +28,7 @@ class DoctorSerializer(serializers.ModelSerializer):
             specialization=validated_data['specialization'],
             password=validated_data['password']
         )
-
-        # app.send_task('appointment_service.tasks.create_doctor_calender', args=[doctor.id])
         create_schedue(doctor_id=doctor.id)
-
         return doctor
     
     def update(self, instance, validated_data):
@@ -42,6 +36,7 @@ class DoctorSerializer(serializers.ModelSerializer):
         if password:
             pass
         return super().update(instance, validated_data)
+
     
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password= serializers.CharField(required=True)

@@ -25,6 +25,6 @@ class MedicalRecord(models.Model):
     
 class RecordOwnership(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
-    doctor_id=models.UUIDField(blank=True, null=False)
-    patient_id=models.UUIDField(blank=True, null=False)
+    doctor_id=models.UUIDField(blank=True, null=True)
+    patient_id=models.UUIDField(blank=True, null=True)
     record=models.ForeignKey(MedicalRecord, on_delete=models.DO_NOTHING)

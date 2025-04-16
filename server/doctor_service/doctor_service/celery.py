@@ -9,4 +9,4 @@ app=Celery('doctor_service')
 
 app.config_from_object("django.conf.settings", namespace="CELERY")
 
-app.autodiscover_tasks(['doctor_service'])
+app.autodiscover_tasks()

@@ -179,3 +179,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CELERY_BROKER_URL=env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND=env('CELERY_RESULT_BACKEND')
+CELERY_TASK_DEFAULT_QUEUE=env('CELERY_TASK_DEFAULT_QUEUE')

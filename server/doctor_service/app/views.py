@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from .serializers import DoctorSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer
 from .models import Specialization
+from .signals import unlink_records
 
 Doctor=get_user_model()
 
@@ -63,6 +64,11 @@ class DoctorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=DoctorSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+        unlink_records(pk)
+        return super().destroy(request, *args, **kwargs)
+
 
 # Update password
 class DoctorPasswordUpdateView(generics.UpdateAPIView):

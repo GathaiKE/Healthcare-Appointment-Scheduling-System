@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from .serializers import DoctorSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer
 from .models import Specialization
-from .signals import unlink_records
+from .signals import unlink_records, delete_schedule
 
 Doctor=get_user_model()
 
@@ -67,6 +67,7 @@ class DoctorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, pk=None, *args, **kwargs):
         unlink_records(pk)
+        delete_schedule(pk)
         return super().destroy(request, *args, **kwargs)
 
 

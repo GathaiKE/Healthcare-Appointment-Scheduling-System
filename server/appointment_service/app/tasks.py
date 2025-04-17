@@ -28,6 +28,13 @@ def create_doctor_calender(doctor_id, shift_start=None, shift_end=None, break_st
         break_duration=break_duration or 60
     )
 
+@shared_task(name="delete_doctor_calendar")
+def delete_doctor_calender(doctor_id):
+    calender=DoctorCalender.objects.filter(doctor_id=doctor_id)
+
+    for item in calender:
+        item.delete()
+        
 
 
 

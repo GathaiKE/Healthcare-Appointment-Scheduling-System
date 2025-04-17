@@ -30,19 +30,26 @@ class MedicalRecord(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     tests=models.ManyToManyField(Test, related_name="medical_records")
     prognosis=models.TextField()
+    age=models.IntegerField(null=False, blank=False)
+    height_m=models.FloatField(null=False, blank=False, help_text='Height in metres')
+    weight_kg=models.FloatField(null=False, blank=False, help_text='weight in kilograms')
+    hiv_status=models.SmallIntegerField(choices=HIVStatus.choices, null=False, blank=False)
+    blood_group=models.SmallIntegerField(choices=BloodGroup.choices, null=False, blank=False)
+    body_temperature=models.IntegerField(null=False, blank=False)
+    systolic_bp=models.PositiveSmallIntegerField(null=True, blank=True)
+    diastolic_bp=models.PositiveSmallIntegerField(null=True, blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(blank=True, null=True)
     deleted_at=models.DateTimeField(null=True, blank=True)
-    age=models.IntegerField(null=False, blank=False)
-    height=models.IntegerField(null=False, blank=False)
-    weight=models.IntegerField(null=False, blank=False)
-    hiv_status=models.SmallIntegerField(choices=HIVStatus.choices)
-    blood_group=models.SmallIntegerField(choices=BloodGroup.choices)
-    body_temperature=models.IntegerField(null=False, blank=False)
 
-    
-    body_mass_index=models.IntegerField(null=False, blank=False)
-    blood_pressure=models.CharField(null=False, blank=False)
+    @property
+    def body_mass_index(self):
+        if self.height_m and self.weight_kg:
+            try:
+                return round(self.weight_kg/(self.height_m**2), 2)
+            except ZeroDivisionError:
+                return None
+        return None
 
     def __str__(self):
         return f"Record {self.id}"

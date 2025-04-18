@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, AdminSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer
 from .permissions import IsOwnerOrAdmin
 
 Patient=get_user_model()
@@ -45,13 +45,19 @@ class AuthenticateView(APIView):
 
 class PatientsListView(generics.ListAPIView):
     queryset=Patient.objects.all()
-    serializer_class=PatientSerializer
+    serializer_class=ListPatientSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[AnonRateThrottle]
 
-class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
+class PatientUpdateView(generics.UpdateAPIView):
     queryset=Patient.objects.all()
     serializer_class=PatientSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]
+
+class PatientDetailView(generics.RetrieveDestroyAPIView):
+    queryset=Patient.objects.all()
+    serializer_class=ListPatientSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
@@ -76,7 +82,7 @@ class PasswordUpdateView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CurrentUserView(generics.RetrieveAPIView):
-    serializer_class=PatientSerializer
+    serializer_class=ListPatientSerializer
     permission_classes=[IsAuthenticated]
 
     def get_object(self):
@@ -84,7 +90,7 @@ class CurrentUserView(generics.RetrieveAPIView):
     
 class PatientActiveStatusView(generics.RetrieveUpdateAPIView):
     queryset=Patient.objects.all()
-    serializer_class=AdminSerializer
+    serializer_class=PatientSerializer
     permission_classes=[IsAdminUser]
     throttle_classes=[AnonRateThrottle]
     lookup_field='pk'

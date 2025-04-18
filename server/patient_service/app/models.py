@@ -13,6 +13,8 @@ class PatientManager(BaseUserManager):
         
         return user
     
+
+    
 class InsuranceProvider(models.Model):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
     name=models.CharField(blank=False, max_length=200)
@@ -28,6 +30,9 @@ class NextOfKin(models.Model):
     phone=models.CharField(max_length=12, blank=False, null=False)
     email=models.EmailField(null=True, blank=True)
     relationship=models.CharField(max_length=200, null=True, blank=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(null=True, blank=True)
+    deleted_at=models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -37,20 +42,19 @@ class Patient(AbstractUser):
         MALE=0, 'male',
         FEMALE=1, 'female'
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=12, unique=True, blank=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
-    id_number=models.CharField(max_length=100, blank=False, default='123', unique=True)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=12, unique=True, blank=True)
+    id_number=models.CharField(max_length=100, blank=False, unique=True)
     insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE, null=True)
-    next_of_kin=models.ForeignKey(NextOfKin, on_delete=models.CASCADE, null=True)
+    next_of_kin=models.OneToOneField(NextOfKin, on_delete=models.CASCADE, null=True)
     gender=models.IntegerField(choices=Gender.choices, null=False, blank=False)
-    updated_at=models.DateTimeField(blank=True, null=True)
     occupation=models.CharField(max_length=200, null=True, blank=True)
     residence=models.CharField(max_length=200, null=True, blank=True)
-    deleted_at=models.DateTimeField(null=True, blank=True)
     updated_at=models.DateTimeField(null=True, blank=True)
+    deleted_at=models.DateTimeField(null=True, blank=True)
     username = None
 
     USERNAME_FIELD='email'

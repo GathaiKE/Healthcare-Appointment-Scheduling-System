@@ -2,57 +2,78 @@ POST http://127.0.0.1:8000/patients/register/
 Content-Type: application/json
 
 {
-    "first_name":"Test",
-    "last_name":"Patient",
-    "surname":"Delete",
-    "email":"ftpd@gmail.com",
+    "first_name":"John",
+    "last_name":"Doe",
+    "surname":"Smith",
+    "email":"johndoke@gmail.com",
     "password":"Patient@@1",
-    "phone":"254700000001",
-    "id_number":"12345679"
+    "phone":"254700000700",
+    "id_number":"12345677",
+    "residence": "Thika, Kiambu",
+    "occupation": "Unknown",
+    "gender":0
 }
 
+    # "next_of_kin": {
+    #     "first_name":"Jane",
+    #     "last_name":"next of kin",
+    #     "email":"nok@email.com",
+    #     "phone":"254766666666",
+    #     "relationship":"mahabusu"
+    # }
 ###
 POST http://127.0.0.1:8000/patients/login/
 Content-Type: application/json
 
 {
-    "email":"ftpd@gmail.com",
+    "email":"johndoke@gmail.com",
     "password": "Patient@@1"
 }
 
 ###
 GET http://127.0.0.1:8000/patients/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTg4NDMxLCJpYXQiOjE3NDQ5ODY2MzEsImp0aSI6IjVlMmUzYTNiNGFmZDQxNzRhMTYyMWJlMTIwMzdkNWUxIiwidXNlcl9pZCI6IjViZGQzMjA5LWFmYTAtNGE0Yy1iZGRkLTMwNGMzNmYyYjQ0YyIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.Sp4kzy5kn0NN8qGh4uxEx4zUQSsW0AFkEAgzY1C5HBzK_RQUHvOpBbH_Lqzw4Gchp2p8iY-sPZnpsBYoiMdyEedCZ_ca10oQEbvhAVN_pL2AVr-q-ge2k3RyyGA83_bIq7PSq1q3vDQiDbMkENOfOpVA6NwLTMslnyoMi9Jjp4L5JrXbtL1WL_CsDBLOzw9YAeajSsJ0uarmz_VMsODuhkjwu5vRwZs9njOP8R9oxp6kY3uaHkb_kVdx7gCQQRkqs1h7yJzllUaN0-vPjaPhmh08OMlet-VCeOKhZy-OlLNUQ4-V5mPvUqetrRw5f4my_BHW2FGzpMtrHcFPXBjBvg
 
 ###
-PUT  http://127.0.0.1:8000/patients/0a20cc04-3330-410c-9e1c-8737328d5140/
+PUT  http://127.0.0.1:8000/patients/0374b291-d845-4935-a37d-86dd88543218/update/
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTk3NDA5LCJpYXQiOjE3NDQ5OTU2MDksImp0aSI6ImU1MmZmMmM4MDkzMDRlYWNhNDAyODAwMTc3N2JkNTAzIiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.F3vOq0ufBv2_zq_4XHGv95cmFO17XqlB_8-TR8tHz0-zORt0x5UShnA65svD6-JiPi_2eIMMknI2Q8Qwu1W6bBt7lSSjlTBZWVT8bjGjD9gPj_rnfObi4LQEcsHpSseD48czrWJjkvIIbn46vqNcQpwxlVj3K4Tw67q7BYRc8eokLOEcF5gD-JUPdDb-Q_Nbz04hxIHADzNXCkGHU1AxdjQhd9JB3vqeuM9x5_hkZeFHaz8IOQ1RfkPdh1vUdjp3wikyRprFplamskI4zDH51iH7HnKgIoXQfjZNpef6bpV1wMcwKj64nOs9JJWrjVcrLap2E8jz19vpxx-VftFO-g
 
 {
-    "first_name": "Test",
-    "last_name": "Patient",
-    "surname": "Default",
-    "email": "ftp@gmail.com",
-    "phone": "254700000000",
-    "id_number":"12345678"
+    "first_name":"John",
+    "last_name":"Doe",
+    "surname":"Smith",
+    "email":"johndoe@gmail.com",
+    "password":"Patient@@1",
+    "phone":"254700000000",
+    "id_number":"12345678",
+    "residence": "Thika, Kiambu",
+    "occupation": "plumber",
+    "gender":0,
+    "next_of_kin": {
+        "first_name":"Daughter",
+        "last_name":"next of kin",
+        "email":"nok@email.com",
+        "phone":"254711111111",
+        "relationship":"daughter"
+    }
 }
 
 ###
-DELETE http://127.0.0.1:8000/patients/565b22b0-d334-42de-a162-bef4fd73bf1f/
+DELETE http://127.0.0.1:8000/patients/c6b4b160-e968-4698-bb24-ea5e5099adc5/
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTk3MDEyLCJpYXQiOjE3NDQ5OTUyMTIsImp0aSI6IjgzN2I1YjVjMzdmZTRlMTBhOWM2ZTAxZTlhMWM3ZmE5IiwidXNlcl9pZCI6ImM2YjRiMTYwLWU5NjgtNDY5OC1iYjI0LWVhNWU1MDk5YWRjNSIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.bLXmjOuqUdS7J8rHWXbTewFyDaTeQ2SrbSLLsyctClfivXyGY1LDWBO7QKZINZCoPcnG0UXWtdMt3qgbuS28PxnHetYG6_eSdYJNTMoFATgErd7iTXji_TpHlDb2WbjylcE1DIVAbPbetHUB4LttxyshfhpXHAvv7Y_5-Mtbpvwt-4YfODPxcdtTzmPPLLvOoak__ZhtrUqmWl7Azhgn3BkndXvvlzhTRa3isr9cVglZ8d5U3IeH4fK-kdq1X5ojmR0CRDhazhAnWtXh5qfT2jIebrFFnC5JTMeJ9zuY3x2QBdRvKdcaLMnQd6niV1M_5Pjl8jdzGxTxBkJHZ0ZOHQ
 
 ###
-GET http://127.0.0.1:8000/patients/0a20cc04-3330-410c-9e1c-8737328d5140/
+GET  http://127.0.0.1:8000/patients/abde4fab-f1e8-42ab-8460-2fa761a4ea03/
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTk1OTUwLCJpYXQiOjE3NDQ5OTQxNTAsImp0aSI6IjFlYTAwM2YxODMwNjQzZjViNjVjZTUxZTAwNjNhNTFlIiwidXNlcl9pZCI6ImFiZGU0ZmFiLWYxZTgtNDJhYi04NDYwLTJmYTc2MWE0ZWEwMyIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.b7pF_GsQof2LUctT0NX1dqbjN_WQzmhDfoXYJDdSI3T6wq5NaZa6mwPPMkWnLZ7Fkrpc09NB7hkQM_0_cDejwqLBnv1QqryGhi4E0vpStx_x9cAXWU411fdNsPHNCxk1FiXSM9DgPW4FQn8S-TOhaUoE9HFxkbkqKMKHTM9ND-uJlyL6pVLJoN0jg7pDBzr57uuK8fIZafclg0gPmcBWXLvaMWaeEaWRdO2kqsUIAwIKS5moos-99tXkDyc1CmQZsY4gGtBPBosPQ3GANVt9yyz26EKF4xt9pDWJk0qPz7GR-i3jX0dRMIaxnfiBpo7ttqyaafF0UyvUjJEmSO0oyg
 
 ###
 GET http://127.0.0.1:8000/patients/me/
 Content-Type: application/json
-Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzNzg2ODI0LCJpYXQiOjE3NDM3ODUwMjQsImp0aSI6ImE3YzFiM2ZjMTRkMTRhZjNiODNiM2I2NTk5YWUzYTk1IiwidXNlcl9pZCI6IjBhMjBjYzA0LTMzMzAtNDEwYy05ZTFjLTg3MzczMjhkNTE0MCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJwYXRpZW50X2lkIjoiMGEyMGNjMDQtMzMzMC00MTBjLTllMWMtODczNzMyOGQ1MTQwIiwiaXNzIjoidXNlcl9zZXJ2aWNlIiwiYXVkIjpbImFwcG9pbnRtZW50X3NlcnZpY2UiLCJkb2N0b3Jfc2VydmljZSIsIm1lZGljYWxfcmVjb3Jkc19zZXJ2aWNlIl19.A9afo01sTFGKaAp96v19PlC5-eBx1q_VBt3us-f55wR2kssLH0K-iS-hRUKDBGPk6LwvYP3FACFUODRz19o2d1DNTJXdko6t8Fl2KGu5f4PCN0_TWwMrCCUVrhaIXdLiIwB_a-sG_pe11MuK9JFpzJ85WKuJ6SmTx_ugOhXVvkK-pyxa9Htdf07lQsykg6oMWXhnhNw08X8V8lkvuTpe9wnXWq3FPWUHp4ZRDxq6X3xr1dwQi8F1O9AgsPwqRCEDd8lsdBTK7_XSrNqt6YPtDbI9zTuw_K4l0yo-gsIDZpr9gcz9VrL4hPki7C3nPRwH40l5n9GSx4dvo9nj62pVOA
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0OTk1OTUwLCJpYXQiOjE3NDQ5OTQxNTAsImp0aSI6IjFlYTAwM2YxODMwNjQzZjViNjVjZTUxZTAwNjNhNTFlIiwidXNlcl9pZCI6ImFiZGU0ZmFiLWYxZTgtNDJhYi04NDYwLTJmYTc2MWE0ZWEwMyIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.b7pF_GsQof2LUctT0NX1dqbjN_WQzmhDfoXYJDdSI3T6wq5NaZa6mwPPMkWnLZ7Fkrpc09NB7hkQM_0_cDejwqLBnv1QqryGhi4E0vpStx_x9cAXWU411fdNsPHNCxk1FiXSM9DgPW4FQn8S-TOhaUoE9HFxkbkqKMKHTM9ND-uJlyL6pVLJoN0jg7pDBzr57uuK8fIZafclg0gPmcBWXLvaMWaeEaWRdO2kqsUIAwIKS5moos-99tXkDyc1CmQZsY4gGtBPBosPQ3GANVt9yyz26EKF4xt9pDWJk0qPz7GR-i3jX0dRMIaxnfiBpo7ttqyaafF0UyvUjJEmSO0oyg
 
 ###
 PUT http://127.0.0.1:8000/patients/me/password/

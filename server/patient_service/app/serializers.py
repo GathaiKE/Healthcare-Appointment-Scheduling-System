@@ -3,38 +3,71 @@ from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
+from django.utils import timezone
 
+from .models import NextOfKin
 Patient=get_user_model()
 
-class AdminSerializer(serializers.ModelSerializer):
-    pass
+
+class NextOfKinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=NextOfKin
+        fields=['id', 'first_name', 'last_name', 'phone', 'email', 'relationship', 'created_at', 'updated_at', 'deleted_at']
+        read_only_fields=['id', 'created_at', 'updated_at', 'deleted_at']
 
 class PatientSerializer(serializers.ModelSerializer):
     password= serializers.CharField(write_only=True, required=False, validators=[validate_password])
-
+    next_of_kin=NextOfKinSerializer(many=False, required=False)
     class Meta:
         model=Patient
-        fields=['id', 'first_name', 'last_name', 'surname', 'email', 'phone', 'id_number', 'password', 'date_joined', 'updated_at', 'deleted_at']
+        fields=['id', 'first_name', 'last_name', 'surname', 'next_of_kin', 'email', 'phone', 'id_number', 'occupation', 'gender', 'residence', 'password', 'date_joined', 'updated_at', 'deleted_at']
         read_only_fields=['id', 'date_joined', 'updated_at', 'deleted_at']
 
     def create(self, validated_data):
-        patient=Patient.objects.create_user(
-            first_name=validated_data
-            ['first_name'],
-            last_name=validated_data['last_name'],
-            surname=validated_data['surname'],
-            email=validated_data['email'],
-            phone=validated_data['phone'],
-            password=validated_data['password'],
-            id_number=validated_data['id_number']
-        )
+        next_of_kin_data=validated_data.pop('next_of_kin', None)
+
+        if next_of_kin_data:
+            next_of_kin_obj=NextOfKin.objects.create(**next_of_kin_data)
+            patient=Patient.objects.create_user(
+                next_of_kin=next_of_kin_obj,
+                **validated_data
+            )
+            return patient
+        
+        patient=Patient.objects.create_user(**validated_data)
         return patient
     
     def update(self, instance, validated_data):
         password=validated_data.pop('password', None)
+
+        updated_next_of_kin=validated_data.pop('next_of_kin')
+
+        if updated_next_of_kin:
+            next_of_kin=instance.next_of_kin
+
+            if next_of_kin is None:
+                new_next_of_kin=NextOfKin.objects.create(**updated_next_of_kin)
+                instance.next_of_kin=new_next_of_kin
+            elif next_of_kin is not None:
+                for attribute, value in updated_next_of_kin.items():
+                    setattr(next_of_kin, attribute, value)
+
+                    next_of_kin.updated_at=timezone.now()
+                    next_of_kin.save()
         if password:
             pass
+
+        instance.updated_at=timezone.now()
         return super().update(instance, validated_data)
+
+
+class ListPatientSerializer(serializers.ModelSerializer):
+    gender=serializers.CharField(read_only=True, source="get_gender_display")
+    next_of_kin=NextOfKinSerializer()
+    class Meta:
+        model=Patient
+        fields=['id', 'first_name', 'last_name', 'surname', 'next_of_kin', 'email', 'phone', 'id_number', 'occupation', 'gender', 'residence', 'date_joined', 'updated_at', 'deleted_at']
+        read_only_fields=['id', 'date_joined', 'updated_at', 'deleted_at']
 
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password= serializers.CharField(required=True)

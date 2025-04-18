@@ -13,6 +13,8 @@ class PatientManager(BaseUserManager):
         
         return user
     
+
+    
 class InsuranceProvider(models.Model):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
     name=models.CharField(blank=False, max_length=200)
@@ -47,7 +49,7 @@ class Patient(AbstractUser):
     phone = models.CharField(max_length=12, unique=True, blank=True)
     id_number=models.CharField(max_length=100, blank=False, unique=True)
     insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE, null=True)
-    next_of_kin=models.ForeignKey(NextOfKin, on_delete=models.CASCADE, null=True)
+    next_of_kin=models.OneToOneField(NextOfKin, on_delete=models.CASCADE, null=True)
     gender=models.IntegerField(choices=Gender.choices, null=False, blank=False)
     occupation=models.CharField(max_length=200, null=True, blank=True)
     residence=models.CharField(max_length=200, null=True, blank=True)

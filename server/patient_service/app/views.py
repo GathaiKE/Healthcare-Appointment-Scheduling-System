@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, AdminSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer
 from .permissions import IsOwnerOrAdmin
 
 Patient=get_user_model()
@@ -84,7 +84,7 @@ class CurrentUserView(generics.RetrieveAPIView):
     
 class PatientActiveStatusView(generics.RetrieveUpdateAPIView):
     queryset=Patient.objects.all()
-    serializer_class=AdminSerializer
+    serializer_class=PatientSerializer
     permission_classes=[IsAdminUser]
     throttle_classes=[AnonRateThrottle]
     lookup_field='pk'

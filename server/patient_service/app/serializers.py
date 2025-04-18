@@ -4,29 +4,41 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 
+from .models import NextOfKin
 Patient=get_user_model()
 
-class AdminSerializer(serializers.ModelSerializer):
-    pass
+
+class NextOfKinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=NextOfKin
+        fields=['id', 'first_name', 'last_name', 'phone', 'email', 'relationship', 'created_at', 'updated_at', 'deleted_at']
+        read_only_fields=['id', 'created_at', 'updated_at', 'deleted_at']
+
+    def create(self, validated_data):
+        next_of_kin=NextOfKin.objects.create(**validated_data)
+        return next_of_kin
 
 class PatientSerializer(serializers.ModelSerializer):
     password= serializers.CharField(write_only=True, required=False, validators=[validate_password])
+    next_of_kin=NextOfKinSerializer(required=False)
 
     class Meta:
         model=Patient
-        fields=['id', 'first_name', 'last_name', 'surname', 'email', 'phone', 'id_number', 'password', 'date_joined', 'updated_at', 'deleted_at']
+        fields=['id', 'first_name', 'last_name', 'surname', 'email', 'phone', 'id_number', 'occupation', 'residence', 'password', 'date_joined', 'updated_at', 'deleted_at']
         read_only_fields=['id', 'date_joined', 'updated_at', 'deleted_at']
 
     def create(self, validated_data):
         patient=Patient.objects.create_user(
-            first_name=validated_data
-            ['first_name'],
+            first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             surname=validated_data['surname'],
             email=validated_data['email'],
             phone=validated_data['phone'],
+            occupation=validated_data['occupation'],
+            residence=validated_data['residence'],
             password=validated_data['password'],
-            id_number=validated_data['id_number']
+            id_number=validated_data['id_number'],
+            next_of_kin=self.next_of_kin
         )
         return patient
     

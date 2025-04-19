@@ -124,3 +124,11 @@ class CurrentUserView(generics.RetrieveAPIView):
         
 # get doctors visits and patients
 # Access a patients information using their ref id
+
+
+# Medical records -> link doctor to appointments. 
+# When fetchng a doctors patients, fetch records where the doctor is a part of and get the related patient data.
+# When fetching appointments, fetch app appointments where the doctor is booked and then prepopulate with their data as well as their medical records/history.
+# figure out how to fetch patients in doctors service.
+# Check whether it would be better to have the doctors enter their own specializations or have them pre-recorded in the system for them to pass reference ids.
+# Certificates and practicing licences processing for verification of the person registering as a doctor.

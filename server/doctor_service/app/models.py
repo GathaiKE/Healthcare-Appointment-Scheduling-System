@@ -29,8 +29,9 @@ class License(models.Model):
     class LicenseStatus(models.IntegerChoices):
         PENDING=0, 'Pending',
         APPROVED=1, 'Approved',
-        SUSPENDED=2, 'Suspended',
-        CANCELLED=3, 'Cancelled'
+        DISAPPROVED=2,'Disapproved',
+        SUSPENDED=3, 'Suspended',
+        CANCELLED=4, 'Cancelled'
     id=models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     practicing_certificate_is_valid=models.BooleanField(default=False)
     identity_card_is_valid=models.BooleanField(default=False)
@@ -39,7 +40,13 @@ class License(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.status
+
     def grant_license(self):
+        if self.status==self.LicenseStatus.DISAPPROVED:
+            raise ValueError("This license has already been cancelled")
+        
         if self.status == self.LicenseStatus.CANCELLED:
             raise ValueError("This license has been permanently cancelled")
         
@@ -49,7 +56,7 @@ class License(models.Model):
         return self
 
     def suspend_license(self):
-        if self.status==self.LicenseStatus.CANCELLED:
+        if self.status==self.LicenseStatus.CANCELLED or self.status==self.LicenseStatus.DISAPPROVED:
             raise ValueError("License has been permanently cancelled")
         if self.status==self.LicenseStatus.PENDING:
             raise ValueError("License has not been approved yet")
@@ -63,8 +70,18 @@ class License(models.Model):
             raise ValueError("License has been permanently cancelled")
         if self.status==self.LicenseStatus.PENDING:
             raise ValueError("License has not been approved yet")
+        if  self.status==self.LicenseStatus.DISAPPROVED:
+            raise ValueError("The licence application was rejected")
         
         self.status=self.LicenseStatus.CANCELLED
+        return self
+
+    def disapprove_licence(self):
+        if  self.status==self.LicenseStatus.PENDING:
+            self.status=self.LicenseStatus.DISAPPROVED
+        
+        if self.status==self.LicenseStatus.APPROVED or self.status==self.LicenseStatus.SUSPENDED or self.status==self.LicenseStatus.CANCELLED:
+            raise ValueError("This application has already proceeded beyond this stage.")
         return self
     
 class Doctor(AbstractUser):
@@ -76,7 +93,7 @@ class Doctor(AbstractUser):
     phone = models.CharField(max_length=12, blank=True)
     id_number=models.CharField(max_length=100, unique=True, blank=False, null=False)
     profile=models.CharField(max_length=200, null=True, blank=True)
-    specialization=models.OneToOneField(Specialization, on_delete=models.CASCADE)
+    specialization=models.ForeignKey(Specialization, on_delete=models.CASCADE)
     license=models.OneToOneField(License, on_delete=models.CASCADE)
     updated_at=models.DateTimeField(blank=True, null=True)
     username = None

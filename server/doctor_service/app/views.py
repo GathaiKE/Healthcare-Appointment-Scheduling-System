@@ -6,14 +6,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import DoctorSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer
+from .serializers import DoctorManageSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer, DoctorFetchSerializer
 from .models import Specialization
 from .signals import unlink_records, delete_schedule
 
 Doctor=get_user_model()
 
 class RegisterDoctorView(generics.CreateAPIView):
-    serializer_class=DoctorSerializer
+    serializer_class=DoctorManageSerializer
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
@@ -40,8 +40,7 @@ class LogInView(APIView):
                 'id_number': doctor.id_number,
                 'is_active': doctor.is_active,
                 'date_joined': doctor.date_joined,
-                'updated_at': doctor.updated_at,
-                'deleted_at': doctor.deleted_at
+                'updated_at': doctor.updated_at
             }
         }, status=status.HTTP_202_ACCEPTED)
     
@@ -54,14 +53,14 @@ class SpecializationView(generics.ListCreateAPIView):
 # List all doctors
 class DoctorsListView(generics.ListAPIView):
     queryset=Doctor.objects.all()
-    serializer_class=DoctorSerializer
+    serializer_class=DoctorFetchSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
     
-# Retrieve, update and Delete a doc
+# Retrieve Update and Delete a doctor.
 class DoctorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Doctor.objects.all()
-    serializer_class=DoctorSerializer
+    serializer_class=DoctorFetchSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
@@ -115,7 +114,7 @@ class ResetPasswordView(APIView):
 
 # get current active user
 class CurrentUserView(generics.RetrieveAPIView):
-    serializer_class=DoctorSerializer
+    serializer_class=DoctorFetchSerializer
     permission_classes=[IsAuthenticated]
 
     def get_object(self):

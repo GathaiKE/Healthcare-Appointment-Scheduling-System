@@ -2,15 +2,15 @@ POST http://127.0.0.1:8002/doctors/register/
 Content-Type: application/json
 
 {
-    "first_name":"Celery",
-    "last_name":"Doctor",
-    "surname":"Delete",
-    "email":"celeryd@gmail.com",
+    "first_name":"Levin",
+    "last_name":"Warren",
+    "surname":"Sanders",
+    "email":"levsanders@gmail.com",
     "password":"Doctor@@1",
-    "phone":"254755555555",
-    "id_number":"11111112",
-    "specialization":"3ed841e9-5ff6-48f6-bce9-2decdacf3e4e",
-    "profile": "celery code"
+    "phone":"254700000002",
+    "id_number":"11111113",
+    "specialization":"efd497f2-13e7-49cd-9310-4cc8966b8761",
+    "profile": ""
 }
 
 ###
@@ -18,17 +18,27 @@ POST http://127.0.0.1:8002/doctors/login/
 Content-Type: application/json
 
 {
-    "email":"celeryworker@gmail.com",
+    "email":"kariukialvin@gmail.com",
     "password":"Doctor@@1"
 }
 
 ###
-GET  http://127.0.0.1:8000/doctors/specializations/
+POST  http://127.0.0.1:8002/doctors/specializations/
 Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzODcyNzI2LCJpYXQiOjE3NDM4NjkxMjYsImp0aSI6IjEwYzViYzQzNTAzNDQzOWRhMGRhY2JlZTZiNTY2MmJjIiwidXNlcl9pZCI6IjBmOGI0NGZjLWU3Y2ItNDAwZi04ZDVkLTI1ZTIwYTUxYzI3ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJkb2N0b3JfaWQiOiIwZjhiNDRmYy1lN2NiLTQwMGYtOGQ1ZC0yNWUyMGE1MWMyN2QiLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXX0.otzDMtus_RDPoXtwzqT1vq3ybw7D8kmITG42cjeRDeI3VMn_qvlGwHNkr8Pd96AkF0HFyrS5Cq8hymA2Lcm5n2_TV-9xAbnqdTUOzEZFmqq5ebAfbyk1iH8gHXI8o2whqmefiY8p9i3wGzOw27mjHpZllTwkS2AA6JP6cC5ENq19WNaSqJ1iz37FVl8KIfdPA0OMhqDOLQstG6lJXlLX0HZLyIWGX0DfcVxJQVm7kcJLhnUSxSbLaRNWN3YlndLgUsy35aN3XrEfFQa8kFDxY3M7UJxNUdGLDH_s0AP5AP-w4C2HkbU2yYpsRSDx-FRVqRv17PxAcidyfsHbYoo8_g
+Content-Type: application/json
+
+{
+    "title":"Neurology",
+    "description":""
+}
+
+###
+GET  http://127.0.0.1:8002/doctors/specializations/
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MTU4ODI5LCJpYXQiOjE3NDUxNTUyMjksImp0aSI6IjEwZjk5ZGFhMjg5ZjQ5ZDNiZTlkYjhlZmU3MzRiNWJkIiwidXNlcl9pZCI6IjE2MTI2YzQ1LTIwNDktNDU4Mi05NTRhLTA0MTc1MjJkNTRiMSIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.lToAEP4pLfmtxV9H9SsePDNyswefd3cVXoeRzdh30EedXxxLuAIW_viWmNu2yAwP0zZAnBBHLVHt6fP2_UrB0EUr4XikdCal6RphrvKQ9bk6WLtTMwgriRnBtx-cepzLHrD_wfMzZkYzdwr9TklPi7AwA-D1fGQDLdV1US9hr1Ij_VflUchVWt7ywR3KugrZkDhu_9Ho2Xq9pb_Mgoq5qnfq4D-jPYB6vaVmcOfceLFgN_B7yndbaZYLOSGmRv0BX1VtnDayqR1Unc7oGUwMP-M19bu987jcaet1HyfVYXFpcyzdWAteVcUdCHIG2jlryPaZXPX_th2SH4ij9rB1tw
 
 ###
 GET  http://127.0.0.1:8002/doctors/
-Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0ODMyNzk0LCJpYXQiOjE3NDQ4MjkxOTQsImp0aSI6IjZjZWVkYThkYTk0MDQ1NjVhNWI4NDBlNzQ0Zjg4YWI4IiwidXNlcl9pZCI6IjcxNTQyNGY4LTJjOWEtNDVjYS1hMmU4LTcxNjgyNWExYmU0ZiIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.N3cs5WUDxFCa5FbvmhMYvmhhT4uiznoW1LsKDnlcSXFG1FzcV6KYH18j7BiM_A3KDLV-6oKuckpFGcteClpZ2hl3CLl3jV-NOowQKZFcxr9H592kLdmFf4U5jbwjH8lRVRcdjoqiyw4zbx53CjILaej4pqNgzylmkJOSEey107bm55AVxWe2B3YexICiGwAUojeV-72qLqhFscQuN1Zn9H8uBXk7-1ew87DpRAxWfaaVCwMYiai--1C2fwGrbe7Uni_MN_-6ya6417iiTMXClXpadRBAYxPOfNz6X4YSOQbCxrzWgbmUrl-YDz4CeLsNXbYLARSo9ovuLxI26vqkxA
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1MTU4ODI5LCJpYXQiOjE3NDUxNTUyMjksImp0aSI6IjEwZjk5ZGFhMjg5ZjQ5ZDNiZTlkYjhlZmU3MzRiNWJkIiwidXNlcl9pZCI6IjE2MTI2YzQ1LTIwNDktNDU4Mi05NTRhLTA0MTc1MjJkNTRiMSIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.lToAEP4pLfmtxV9H9SsePDNyswefd3cVXoeRzdh30EedXxxLuAIW_viWmNu2yAwP0zZAnBBHLVHt6fP2_UrB0EUr4XikdCal6RphrvKQ9bk6WLtTMwgriRnBtx-cepzLHrD_wfMzZkYzdwr9TklPi7AwA-D1fGQDLdV1US9hr1Ij_VflUchVWt7ywR3KugrZkDhu_9Ho2Xq9pb_Mgoq5qnfq4D-jPYB6vaVmcOfceLFgN_B7yndbaZYLOSGmRv0BX1VtnDayqR1Unc7oGUwMP-M19bu987jcaet1HyfVYXFpcyzdWAteVcUdCHIG2jlryPaZXPX_th2SH4ij9rB1tw
 
 ###
 GET  http://127.0.0.1:8000/doctors/a8a00fb4-8349-4fe3-b5e5-f736552b136e/

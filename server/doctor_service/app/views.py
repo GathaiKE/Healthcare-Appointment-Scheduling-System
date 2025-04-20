@@ -57,17 +57,10 @@ class DoctorsListView(generics.ListAPIView):
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
     
-# Retrieve single doctor.
-class DoctorDetailAPIView(generics.RetrieveAPIView):
+# Retrieve Update and Delete a doctor.
+class DoctorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Doctor.objects.all()
     serializer_class=DoctorFetchSerializer
-    permission_classes=[IsAuthenticated]
-    throttle_classes=[UserRateThrottle]
-
-#  Update and Delete a doctor.
-class DoctorDetailAPIView(generics.UpdateDestroyAPIView):
-    queryset=Doctor.objects.all()
-    serializer_class=DoctorManageSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 

@@ -25,7 +25,6 @@ class SpecializationSeriaizer(serializers.ModelSerializer):
 class DoctorManageSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
     license=LicenseSerializer(required=False)
-    specialization=SpecializationSeriaizer()
 
     class Meta:
         model=Doctor
@@ -33,15 +32,9 @@ class DoctorManageSerializer(serializers.ModelSerializer):
         read_only_fields=['id', 'date_joined', 'license', 'updated_at']
 
     def create(self, validated_data):
-        doctor=Doctor.objects.create_user(**validated_data,license=License.objects.create())
+        doctor=Doctor.objects.create_user(**validated_data, license=License.objects.create())
         create_schedue(doctor_id=doctor.id)
         return doctor
-
-    def update(self, instance, validated_data):
-        password=validated_data.pop('password', None)
-        if password:
-            pass
-        return super().update(instance, validated_data)
 
 class DoctorFetchSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
@@ -58,6 +51,13 @@ class DoctorFetchSerializer(serializers.ModelSerializer):
     
     def get_license(self, obj):
         return obj.license.get_status_display() or None
+
+    def update(self, instance, validated_data):
+        password=validated_data.pop('password', None)
+        license=validated_data.pop('license', None)
+        if password or license:
+            pass
+        return super().update(instance, validated_data)
 
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password= serializers.CharField(required=True)

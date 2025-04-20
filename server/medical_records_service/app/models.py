@@ -59,3 +59,6 @@ class RecordOwnership(models.Model):
     doctor_id=models.UUIDField(blank=True, null=True)
     patient_id=models.UUIDField(blank=True, null=True)
     record=models.ForeignKey(MedicalRecord, on_delete=models.DO_NOTHING)
+
+
+# X-Ray and other scans upload by doctors.

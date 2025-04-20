@@ -3,41 +3,62 @@ from django.contrib.auth import password_validation, get_user_model, authenticat
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 
-from .models import Specialization
+from .models import Specialization, License
 from .signals import create_schedue, unlink_records
 
 Doctor=get_user_model()
 
-class DoctorSerializer(serializers.ModelSerializer):
+class LicenseSerializer(serializers.ModelSerializer):
+    status=serializers.CharField(source='get_status_display')
+    class Meta:
+        model=License
+        fields=['id', 'practicing_certificate_is_valid', 'identity_card_is_valid', 'face_verification', 'status', 'updated_at', 'created_at']
+        read_only_fields=['id', 'status', 'updated_at', 'created_at']
+
+class SpecializationSeriaizer(serializers.ModelSerializer):
+    class Meta:
+        model=Specialization
+        fields=['id','title', 'description', 'updated_at', 'created_at']
+        read_only_fields=['id', 'updated_at', 'created_at']
+
+
+class DoctorManageSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
+    license=LicenseSerializer(required=False)
+    specialization=SpecializationSeriaizer()
 
     class Meta:
         model=Doctor
-        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'password', 'profile', 'id_number', 'updated_at', 'deleted_at']
-        read_only_fields=['id', 'updated_at', 'deleted_at']
+        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'license', 'password', 'profile', 'id_number', 'updated_at']
+        read_only_fields=['id', 'date_joined', 'license', 'updated_at']
 
     def create(self, validated_data):
-        doctor=Doctor.objects.create_user(
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            surname=validated_data['surname'],
-            email=validated_data['email'],
-            phone=validated_data['phone'],
-            id_number=validated_data['id_number'],
-            profile=validated_data['profile'] if validated_data['profile'] else "default",
-            specialization=validated_data['specialization'],
-            password=validated_data['password']
-        )
+        doctor=Doctor.objects.create_user(**validated_data,license=License.objects.create())
         create_schedue(doctor_id=doctor.id)
         return doctor
-    
+
     def update(self, instance, validated_data):
         password=validated_data.pop('password', None)
         if password:
             pass
         return super().update(instance, validated_data)
 
+class DoctorFetchSerializer(serializers.ModelSerializer):
+    password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
+    license=serializers.SerializerMethodField()
+    specialization=serializers.SerializerMethodField()
+
+    class Meta:
+        model=Doctor
+        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'license', 'password', 'profile', 'id_number', 'updated_at']
+        read_only_fields=['id', 'date_joined', 'license', 'updated_at']
+
+    def get_specialization(self, obj):
+        return obj.specialization.title or None
     
+    def get_license(self, obj):
+        return obj.license.get_status_display() or None
+
 class PasswordUpdateSerializer(serializers.ModelSerializer):
     old_password= serializers.CharField(required=True)
     new_password=serializers.CharField(required=True, validators=[password_validation.validate_password])
@@ -103,9 +124,3 @@ class AuthSerializer(TokenObtainPairSerializer):
         data['access']=str(refresh.access_token)
 
         return data
-
-class SpecializationSeriaizer(serializers.ModelSerializer):
-    class Meta:
-        model=Specialization
-        fields=['id','title']
-        read_only_fields=['id']

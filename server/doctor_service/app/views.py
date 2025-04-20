@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .serializers import DoctorManageSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer, DoctorFetchSerializer
-from .models import Specialization
-from .signals import unlink_records, delete_schedule
+from .models import Specialization, License
+from .producer import unlink_records, delete_schedule
 
 Doctor=get_user_model()
 
@@ -50,9 +50,38 @@ class SpecializationView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
-# List all doctors
+# List all approved doctors
 class DoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.all()
+    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.APPROVED)
+    serializer_class=DoctorFetchSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]
+
+# List only unlicensed doctors
+class PendingDoctorsListView(generics.ListAPIView):
+    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.PENDING)
+    serializer_class=DoctorFetchSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]
+
+
+# Suspended docs
+class SuspendedDoctorsListView(generics.ListAPIView):
+    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.SUSPENDED)
+    serializer_class=DoctorFetchSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]
+
+# Permanently Cancelled licenses
+class CancelledDoctorsListView(generics.ListAPIView):
+    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.CANCELLED)
+    serializer_class=DoctorFetchSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]
+
+# Rejected Licences
+class DisapprovedDoctorsListView(generics.ListAPIView):
+    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.DISAPPROVED)
     serializer_class=DoctorFetchSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
@@ -118,7 +147,6 @@ class CurrentUserView(generics.RetrieveAPIView):
     permission_classes=[IsAuthenticated]
 
     def get_object(self):
-        print(" current user is: ",self.request.user)
         return self.request.user
         
 # get doctors visits and patients

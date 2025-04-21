@@ -4,7 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 
 from .models import Specialization, License
-from .signals import create_schedue, unlink_records
+from .producer import create_schedue
 
 Doctor=get_user_model()
 

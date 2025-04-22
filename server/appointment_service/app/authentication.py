@@ -10,11 +10,11 @@ class ServiceUser(AbstractBaseUser):
     class Meta:
         managed=False
 
-    def __init__(self, user_id, role, is_staff, is_speruser, is_active):
+    def __init__(self, user_id, role, is_staff, is_superuser, is_active):
         self.id=user_id
         self.role=role
         self.is_staff=is_staff
-        self.is_superuser=is_speruser
+        self.is_superuser=is_superuser
         self.is_active=is_active
 
         @property
@@ -80,8 +80,9 @@ class JWTAuthentication(JWTAuthentication):
         return ServiceUser(
             user_id=validated_payload.get("user_id"),
             role=validated_payload.get('role'),
-            is_admin=validated_payload.get('is_staff'),
-            is_active=validated_payload.get('is_active')
+            is_staff=validated_payload.get('is_staff'),
+            is_active=validated_payload.get('is_active'),
+            is_superuser=validated_payload.get('is_superuser')
         )
 
         

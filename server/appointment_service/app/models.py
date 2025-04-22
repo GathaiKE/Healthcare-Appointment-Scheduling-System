@@ -9,8 +9,6 @@ class Slot(models.Model):
     start_time=models.TimeField()
     end_time=models.TimeField()
 
-    def __str__(self):
-        return f"Date:{self.date} From: {self.start_time} To: {self.end_time}"
 
 class OffPeriod(models.Model):
     id=models.UUIDField(primary_key=True,unique=True, editable=False, default=uuid.uuid4)
@@ -47,8 +45,8 @@ class Appointment(models.Model):
     hospital_id=models.CharField(max_length=100, blank=True)
     slot=models.ForeignKey(Slot, on_delete=models.CASCADE)
     status=models.IntegerField(choices=Status.choices, default=Status.PENDING)
-    created_at=models.DateTimeField(blank=False, auto_now_add=True)
-    updated_at=models.DateTimeField(blank=True, null=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
     deleted_at=models.DateTimeField(blank=True, null=True)
 
 

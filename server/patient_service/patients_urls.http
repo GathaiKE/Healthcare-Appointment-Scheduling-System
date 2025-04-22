@@ -14,19 +14,12 @@ Content-Type: application/json
     "gender":0
 }
 
-    # "next_of_kin": {
-    #     "first_name":"Jane",
-    #     "last_name":"next of kin",
-    #     "email":"nok@email.com",
-    #     "phone":"254766666666",
-    #     "relationship":"mahabusu"
-    # }
 ###
 POST http://127.0.0.1:8000/patients/login/
 Content-Type: application/json
 
 {
-    "email":"johndoke@gmail.com",
+    "email":"johndoe@gmail.com",
     "password": "Patient@@1"
 }
 

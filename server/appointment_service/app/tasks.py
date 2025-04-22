@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from .models import Appointment, DoctorCalender
 
-# @shared_task(name="appointment_service.tasks.cancel_patient_appointments")
 @shared_task(name="cancel_patient_appointments")
 def cancel_patients_appointments(patient_id):
     appointments = Appointment.objects.filter(patient_id=patient_id)

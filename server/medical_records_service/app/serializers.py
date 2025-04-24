@@ -5,7 +5,7 @@ from .models import MedicalRecord, Test, RecordOwnership
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
-        fields=['id', 'name', 'result', 'created_at','updated_at', 'deleted_at']
+        fields=['id', 'name', 'result', 'details', 'created_at','updated_at', 'deleted_at']
         read_only_fields=['id', 'created_at','updated_at', 'deleted_at']
 
 class RecordSerializer(serializers.ModelSerializer):
@@ -14,17 +14,15 @@ class RecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=MedicalRecord
-        fields=['id', 'prognosis', 'tests', 'patient_id', 'created_at','updated_at', 'deleted_at']
+        fields=['id', 'prognosis', 'tests', 'age', 'height_m', 'weight_kg', 'hiv_status', 'blood_group', 'body_temperature', 'systolic_bp', 'diastolic_bp', 'patient_id', 'created_at','updated_at', 'deleted_at']
         read_only_fields=['id', 'created_at','updated_at', 'deleted_at']
 
     def create(self, validated_data):
-
         tests_data=validated_data.pop("tests", [])
         doctor=self.context['request'].user
         patient_ref_id=validated_data.pop("patient_id", None)
 
         medical_record=MedicalRecord.objects.create(**validated_data)
-
 
         for test_data in tests_data:
             test=Test.objects.create(**test_data)
@@ -63,10 +61,8 @@ class RecordOwnershipSerializer(serializers.ModelSerializer):
 
     def get_doctor_id(self, obj):
         ownership=getattr(obj, 'prefetched_ownership', [])
-
         return ownership[0].doctor_id if ownership else None
         
     def get_patient_id(self, obj):
         ownership=getattr(obj, 'prefetched_ownership', None)
-
         return ownership[0].patient_id if ownership else None

@@ -187,18 +187,21 @@ class OffCalenderSerializer(serializers.ModelSerializer):
         fields=['id','doctor_id','start_date', 'end_date', 'start_time', 'end_time', 'nature','created_at','updated_at']
         read_only_fields=['id', 'created_at','updated_at']
 
-    def period_is_available(self, doctor_id, start_date, end_date, start_time='00:00:00', end_time='23:59:59'):
+    def period_is_available(self, doctor_id, start_date, end_date, time_from='00:00:00', time_to='23:59:59'):
         doctor_leave_instances=OffPeriod.objects.filter(doctor_id=doctor_id)
+        if not doctor_leave_instances.exists():
+            return True
+        
         overlapping_instances=list()
+        start_time=time_from
+        end_time=time_to
+
         for instance in doctor_leave_instances:
 
             if (instance.start_date<=end_date and instance.end_date>=end_date) or (instance.start_date<=start_date and instance.end_date>=start_date):
-                if (instance.start_time<=end_time and instance.end_date>=end_time) or (instance.start_time<=start_time and instance.end_time>=start_time):
+                if (instance.start_time<=end_time and instance.end_time>=end_time) or (instance.start_time<=start_time and instance.end_time>=start_time):
                     overlapping_instances.append(instance)
 
-        
-        print(f"Overlapping leave slots: {overlapping_instances}")
-        
         return not len(overlapping_instances)>0
 
 
@@ -206,8 +209,10 @@ class OffCalenderSerializer(serializers.ModelSerializer):
         doctor_id=self.context['request'].user.id
         start_date=validated_data.pop('start_date', None)
         end_date=validated_data.pop('end_date', start_date)
+        start_time=validated_data['start_time'] or "00:00:00"
+        end_time=validated_data['end_time'] or "23:59:59"
 
-        if not self.period_is_available(doctor_id,start_date, end_date):
+        if not self.period_is_available(doctor_id,start_date, end_date, time_to=end_time, time_from=start_time):
             raise serializers.ValidationError("Doctor is already on leave at specified time.")
         
         entry=OffPeriod.objects.create(

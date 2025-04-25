@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.throttling import UserRateThrottle
 from django.db.models import Prefetch
 
-from .serializers import RecordSerializer, TestSerializer, RecordOwnershipSerializer
+from .serializers import RecordSerializer, TestSerializer, RecordOwnershipSerializer,RecordUpdateSerializer
 from .models import MedicalRecord, Test, RecordOwnership
 from .permissions import IsOwnerOrDoctor, IsDoctor, IsPatient
 
@@ -66,23 +66,32 @@ class CreateRecordView(generics.CreateAPIView):
 # update record
 class RecordUpdateView(generics.UpdateAPIView):
     queryset=MedicalRecord.objects.all()
-    serializer_class=RecordSerializer
+    serializer_class=RecordUpdateSerializer
     permission_classes=[IsDoctor]
     throttle_classes=[UserRateThrottle]
 
 # fetch record
-# class RecordRetrieveView(generics.RetrieveAPIView):
-#     queryset=MedicalRecord.objects.all()
-#     serializer_class=RecordSerializer
-#     permission_classes=[IsOwnerOrDoctor]
-#     throttle_classes=[UserRateThrottle]
+class RecordRetrieveView(generics.RetrieveAPIView):
+    serializer_class=RecordOwnershipSerializer
+    permission_classes=[IsOwnerOrDoctor]
+    throttle_classes=[UserRateThrottle]
+
+    def get_queryset(self):
+        pk=self.kwargs['pk']
+        return MedicalRecord.objects.prefetch_related(
+            Prefetch(
+                'recordownership_set',
+                queryset=RecordOwnership.objects.filter(record_id=pk),
+                to_attr='prefetched_ownership'
+            )
+        )
 
 # # delete record
-# class RecordDestroyView(generics.DestroyAPIView):
-#     queryset=MedicalRecord.objects.all()
-#     serializer_class=RecordSerializer
-#     permission_classes=[IsDoctor]
-#     throttle_classes=[UserRateThrottle]
+class RecordDestroyView(generics.DestroyAPIView):
+    queryset=MedicalRecord.objects.all()
+    serializer_class=RecordSerializer
+    permission_classes=[IsDoctor]
+    throttle_classes=[UserRateThrottle]
 
 # update, fetch and delete test
 class TestDetailView(generics.RetrieveUpdateDestroyAPIView):

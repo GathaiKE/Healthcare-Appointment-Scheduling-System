@@ -32,7 +32,7 @@ class MedicalRecord(models.Model):
     tests=models.ManyToManyField(Test, related_name="medical_records")
     prognosis=models.TextField()
     age=models.IntegerField(null=False, blank=False)
-    height_m=models.FloatField(null=False, blank=False, help_text='Height in metres')
+    height_cm=models.FloatField(null=False, blank=False, help_text='Height in metres')
     weight_kg=models.FloatField(null=False, blank=False, help_text='Weight in kilograms')
     hiv_status=models.SmallIntegerField(choices=HIVStatus.choices, null=False, blank=False)
     blood_group=models.SmallIntegerField(choices=BloodGroup.choices, null=False, blank=False)
@@ -45,9 +45,9 @@ class MedicalRecord(models.Model):
 
     @property
     def body_mass_index(self):
-        if self.height_m and self.weight_kg:
+        if self.height_cm and self.weight_kg:
             try:
-                return round(self.weight_kg/(self.height_m**2), 2)
+                return round(self.weight_kg/(self.height_cm**2), 2)
             except ZeroDivisionError:
                 return None
         return None
@@ -59,7 +59,7 @@ class RecordOwnership(models.Model):
     id=models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     doctor_id=models.UUIDField(blank=True, null=True)
     patient_id=models.UUIDField(blank=True, null=True)
-    record=models.ForeignKey(MedicalRecord, on_delete=models.DO_NOTHING)
+    record=models.ForeignKey(MedicalRecord, on_delete=models.CASCADE)
 
 
 # X-Ray and other scans upload by doctors.

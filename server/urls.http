@@ -1,0 +1,24 @@
+POST http://localhost:8000/patients/login/
+Content-Type: application/json
+
+{
+    "email":"johndoe@gmail.com",
+    "password": "Patient@@1"
+}
+
+
+###
+GET http://localhost:8000/records/doctors/records/
+Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NjAwNTMyLCJpYXQiOjE3NDU1OTY5MzIsImp0aSI6IjgwNGY5OWY5ZjMwYTQyOWRhNThjMjNkNmJhNTUzNzVhIiwidXNlcl9pZCI6IjRmYTE2N2FjLTgzMDQtNGYyYS05M2M3LTViMmZkYzMyMDdjNyIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJkb2N0b3Jfc2VydmljZSIsImF1ZCI6WyJwYXRpZW50X3NlcnZpY2UiLCJtZWRpY2FsX3JlY29yZHNfc2VydmljZSIsImFwcG9pbnRtZW50X3NlcnZpY2UiXSwicm9sZSI6ImRvY3RvciJ9.hAV4F-AS9ITK5Rsaz-BgPRt-jD-JiYQF5DwgBQlMuyy3JwY8YXv4VFzRL8MKf8IM23hxYrVqbgwUT3YVKXT1VTBgRK5XGVETHYANqPYGlsbECQpc82__nCwkFo7dx_3YhotYuPMGkN1JDOCzrAmE9p-LR4hRugrjbl_VHwCzoa_fGuGFwBxQ7BJLQQ_2WjBTb3GNKTFxcyl38GSijBjF7BOB29-4t9BrBfcp6GkqR2UX8JkSHCZhDNGrwvjx-XNariKoziq2DZqfetuJs9Vby5pyCZeQ8Qx4-jr5ZEJgnx58GpsXETc7ebFTtyUPz0QA2PGsAPEOogE7tDSphvyuWA
+
+
+
+###
+POST http://localhost:8000/records/licensing/records/
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Length: 123
+Authorization: Bearer
+
+{
+    
+}

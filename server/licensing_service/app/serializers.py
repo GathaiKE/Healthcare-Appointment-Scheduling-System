@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 
 from .models import License,User
 
@@ -25,7 +26,8 @@ class LicenseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data=validated_data.pop('user')
         user=User.objects.create(**user_data)
-        license=License.objects.create(user=user, **validated_data)
+        expiration_date=timezone.now() + timezone.timedelta(days=3650)
+        license=License.objects.create(user=user, expiration_date=expiration_date, **validated_data)
         return license
     
     def update(self, instance, validated_data):

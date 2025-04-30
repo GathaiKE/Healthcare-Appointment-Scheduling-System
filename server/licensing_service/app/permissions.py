@@ -106,3 +106,13 @@ class IsDoctor(RolePermission):
 
     def get_allowed_roles(self):
         return {'doctor'}
+
+
+class IsAdminUser(RolePermission):
+    def __init__(self):
+        super().__init__()
+        self.allowed_roles={'admin'}
+        self.min_role_level = self.ROLE_HIERACHY['admin']
+
+    def get_allowed_roles(self):
+        return {'admin'}

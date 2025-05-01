@@ -14,11 +14,10 @@ class LicenseViewSet(viewsets.ModelViewSet):
     serializer_class = LicenseSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'update']:
-            return [IsDoctor()]
-        elif self.action in ['approve', 'disapprove', 'suspend', 'cancel', 'extend']:
-            return [IsAdminUser()]
-        
+        if self.action in ['create', 'update','retrieve']:
+            return [IsAuthenticated(), IsDoctor()]
+        elif self.action in ['approve', 'disapprove', 'suspend', 'cancel', 'extend','list']:
+            return [IsAuthenticated(), IsAdminUser()]
         return [IsAuthenticated()]
 
 
@@ -30,48 +29,73 @@ class LicenseViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if not isinstance(instance, License):
+            return Response(
+                {'error': 'Invalid license instance.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        allowed_fields = {'face_image', 'id_card', 'certificate'}
+        data = {key: value for key, value in request.data.items() if key in allowed_fields}
+
+        if not data:
+            return Response(
+                {'error': 'No valid fields provided for update.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, method=['post'])
+    def perform_update(self, serializer):
+        for field in ['face_img', 'id_card', 'practicing_certificate']:
+            if field in serializer.validated_data:
+                file = getattr(serializer.instance.user, field, None)
+                if file:
+                    file.delete()
+        serializer.save(user=serializer.instance.user)
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
     def extend(self, request, pk=None):
         license_instance = self.get_object()
-        license_instance.expiry_date += timedelta(days=365)
-        license_instance.save()
-        return Response({'status': 'License extended by a year'}, status=status.HTTP_200_OK)
-
+        if license_instance.application_is_complete:
+            license_instance.extend_license(days=365)
+            return Response({'status': 'License extended by a year'}, status=status.HTTP_200_OK)
+        return Response({'status':'This application is not complete'}, status=status.HTTP_400_BAD_REQUEST)
+    
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         license_instance = self.get_object()
-        license_instance.status = License.LicenseStatus.APPROVED
-        license_instance.save()
-        return Response({'status': 'License approved'}, status=status.HTTP_200_OK)
+        if license_instance.application_is_complete:
+            license_instance.grant_license()
+            return Response({'status': 'License approved'}, status=status.HTTP_200_OK)
+        return Response({'error':'Cannot approve an incomplete application'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
     def disapprove(self, request, pk=None):
         license_instance = self.get_object()
-        license_instance.status = License.LicenseStatus.DISAPPROVED
-        license_instance.save()
+        license_instance.disapprove_license()
         return Response({'status': 'License disapproved'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def suspend(self, request, pk=None):
         license_instance = self.get_object()
-        license_instance.status = License.LicenseStatus.SUSPENDED
-        license_instance.save()
+        license_instance.suspend_license()
         return Response({'status': 'License suspended'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         license_instance = self.get_object()
-        license_instance.status = License.LicenseStatus.CANCELLED
-        license_instance.save()
+        license_instance.cancel_license()
         return Response({'status': 'License cancelled'}, status=status.HTTP_200_OK)
         
-    
-    
 
 
 # Apply for a license -> By default, every user should have an application created on registration. Those without the processing info ie id card, certificate and face provided need to default to pending

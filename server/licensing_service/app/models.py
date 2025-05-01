@@ -6,10 +6,10 @@ from datetime import timedelta
 
 class User(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, unique=True, editable=False)
-    user_id = models.CharField(max_length=255, unique=True)
-    face_img=models.CharField(max_length=255)
-    practicing_certificate=models.CharField(max_length=255)
-    identity_card=models.CharField(max_length=255)
+    user_id = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    face_img=models.ImageField(upload_to='face_images/', null=True, blank=True)
+    practicing_certificate=models.FileField(upload_to='practicing_certificates/', null=True, blank=True)
+    identity_card=models.FileField(upload_to='id_cards/', null=True, blank=True)
     valid_practicing_certificate=models.BooleanField(default=False)
     valid_identity_card=models.BooleanField(default=False)
     valid_face_img=models.BooleanField(default=False)
@@ -81,6 +81,10 @@ class License(models.Model):
     def is_valid(self):
         return self.status == self.LicenseStatus.APPROVED and self.face_verification and self.practicing_certificate_is_valid and self.identity_card_is_valid and not self.is_expired()
 
+    @property
+    def application_is_complete(self):
+        return len(self.user.face_img) > 0 and len(self.user.identity_card) > 0 and len(self.user.practicing_certificate)
+    
     class Meta:
         db_table = 'licenses'
         verbose_name = 'License'

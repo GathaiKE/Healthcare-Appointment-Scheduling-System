@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'licensing_service.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': ENV('PG_LICENCING_NAME'),
+        'NAME': ENV('PG_LICENSING_DATABASE'),
         'PORT': ENV('PG_PORT'),
         'HOST': ENV('PG_HOST'),
         'USER': ENV('PG_USER'),
@@ -143,7 +143,7 @@ REST_FRAMEWORK={
         'app.permissions.IsDoctor'
     ],
     'DEFAULT_THROTTLE_CLASSES':[
-        'rest_framework.throttling.UserThrottleRate'
+        'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES':{
         'user':'2000/hour'
@@ -169,3 +169,15 @@ AUTHENTICATION_BACKENDS=[
 CELERY_BROKER_URL=ENV('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND=ENV('CELERY_RESULT_BACKEND')
 CELERY_TASK_DEFAULT_QUEUE=ENV('CELERY_TASK_DEFAULT_QUEUE')
+# CSP settings
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_CONNECT_SRC = ("'self'",)
+CSP_FRAME_SRC = ("'self'",)
+
+
+MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
+MEDIA_URL='/media/'

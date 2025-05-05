@@ -1,2 +1,6 @@
-server-env/
-.env
+server/**/venv
+server/dockerignore
+server/.dockerignore
+server/**/.env.*
+server/**/.env
+server/**/.http.*

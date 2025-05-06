@@ -4,3 +4,4 @@ server/.dockerignore
 server/**/.env.*
 server/**/.env
 server/**/.http.*
+server/**/.http

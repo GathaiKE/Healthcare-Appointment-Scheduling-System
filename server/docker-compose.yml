@@ -1,0 +1,233 @@
+services:
+  administrators_database: 
+    image: postgres:16
+    container_name: administrators-db
+    restart: always
+    env_file:
+      - ./administrator/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_ADMINISTRATORS_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5433:${PG_PORT}"
+    volumes:
+      - administrators_database:/var/lib/postgresql/data
+
+  appointments_database:
+    image: postgres:16
+    container_name: appointments-db
+    restart: always
+    env_file:
+      - ./appointment_service/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_APPOINTMENTS_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5434:${PG_PORT}"
+    volumes:
+      - appointments_database:/var/lib/postgresql/data
+
+  doctors_database:
+    image: postgres:16
+    container_name: doctors-db
+    restart: always
+    env_file:
+      - ./doctor_service/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_DOCTORS_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5435:${PG_PORT}"
+    volumes:
+      - doctors_database:/var/lib/postgresql/data
+
+  medical_records_database: 
+    image: postgres:16
+    container_name: medical-records-db
+    restart: always
+    env_file:
+      - ./medical_records_service/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_MEDICAL_RECORDS_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5436:${PG_PORT}"
+    volumes:
+      - medical_records_database:/var/lib/postgresql/data
+
+  patients_database:
+    image: postgres:16
+    container_name: patients-db
+    restart: always
+    env_file:
+      - ./patient_service/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_PATIENTS_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5437:${PG_PORT}"
+    volumes:
+      - patients_database:/var/lib/postgresql/data
+  
+  licensing_database:
+    image: postgres:16
+    container_name: licensing-db
+    restart: always
+    env_file:
+      - ./licensing_service/.env
+    environment:
+      POSTGRES_DATABASE: ${PG_LICENSING_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5438:${PG_PORT}"
+    volumes:
+      - licensing_database:/var/lib/postgresql/data
+  
+  api_gateway:
+    build: 
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    container_name: api_gateway
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=api_gateway.settings
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./api_gateway/.env
+
+  administrators:
+    build:
+      context: ./administrator
+      dockerfile: Dockerfile
+    container_name: administrators
+    restart: always
+    env_file:
+      - ./administrator/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=administrator.settings
+      - DB_NAME=administrators_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    ports:
+      - "8001:8001"
+    depends_on:
+      - administrators_database
+
+  appointment_service:
+    build: 
+      context: ./appointment_service
+      dockerfile: Dockerfile
+    container_name: appointments
+    restart: always
+    env_file:
+      - ./appointment_service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=appointment_service.settings
+      - DB_NAME=appointments_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    ports:
+      - "8002:8002"
+    depends_on:
+      - appointments_database
+
+  doctor_service:
+    build:
+      context: ./doctor_service
+      dockerfile: Dockerfile
+    container_name: doctors
+    restart: always
+    env_file:
+      - ./doctor_service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=doctor_service.settings
+      - DB_NAME=doctors_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    ports:
+      - "8003:8003"
+    depends_on:
+      - doctors_database
+  
+  licensing_service:
+    build:
+      context: ./licensing_service
+      dockerfile: Dockerfile
+    container_name: licensing
+    restart: always
+    env_file:
+      - ./licensing_service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=licensing_service.settings
+      - DB_NAME=licensing_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    volumes:
+      - .:/app
+    ports:
+      - "8004:8004"
+    depends_on:
+      - licensing_database
+  
+  medical_records_service:
+    build:
+      context: ./medical_records_service
+      dockerfile: Dockerfile
+    container_name: medical_records
+    restart: always
+    env_file:
+      - ./medical_records_service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=medical_records_service.settings
+      - DB_NAME=medical_records_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    ports:
+      - "8005:8005"
+    depends_on:
+      - medical_records_database
+
+  patient_service:
+    build:
+      context: ./patient_service
+      dockerfile: Dockerfile
+    container_name: patient_service
+    restart: always
+    env_file:
+      - ./patient_service/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=patient_service.settings
+      - DB_NAME=patients_database
+      - DB_HOST=${PG_HOST}
+      - DB_PASSWORD=${PG_PASSWORD}
+      - DB_USER=${PG_USER}
+      - DB_PORT=${PG_PORT}
+    ports:
+      - "8006:8006"
+    depends_on:
+      - patients_database
+
+volumes:
+  administrators_database:
+  appointments_database:
+  doctors_database:
+  medical_records_database:
+  patients_database:
+  licensing_database:

@@ -6,8 +6,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import DoctorManageSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer, DoctorFetchSerializer
-from .models import Specialization, License
+from .serializers import DoctorManageSerializer, AuthSerializer,SpecializationSeriaizer, PasswordUpdateSerializer, PasswordResetSerializer, DoctorFetchSerializer,EmailCheckSerializer
+from .models import Specialization
 from .producer import unlink_records, delete_schedule
 
 Doctor=get_user_model()
@@ -50,42 +50,13 @@ class SpecializationView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
-# List all approved doctors
+# List all doctors
 class DoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.APPROVED)
+    queryset=Doctor.objects.all()
     serializer_class=DoctorFetchSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
-# List only unlicensed doctors
-class PendingDoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.PENDING)
-    serializer_class=DoctorFetchSerializer
-    permission_classes=[IsAuthenticated]
-    throttle_classes=[UserRateThrottle]
-
-
-# Suspended docs
-class SuspendedDoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.SUSPENDED)
-    serializer_class=DoctorFetchSerializer
-    permission_classes=[IsAuthenticated]
-    throttle_classes=[UserRateThrottle]
-
-# Permanently Cancelled licenses
-class CancelledDoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.CANCELLED)
-    serializer_class=DoctorFetchSerializer
-    permission_classes=[IsAuthenticated]
-    throttle_classes=[UserRateThrottle]
-
-# Rejected Licences
-class DisapprovedDoctorsListView(generics.ListAPIView):
-    queryset=Doctor.objects.filter(license__status=License.LicenseStatus.DISAPPROVED)
-    serializer_class=DoctorFetchSerializer
-    permission_classes=[IsAuthenticated]
-    throttle_classes=[UserRateThrottle]
-    
 # Retrieve Update and Delete a doctor.
 class DoctorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset=Doctor.objects.all()
@@ -149,13 +120,17 @@ class CurrentUserView(generics.RetrieveAPIView):
     def get_object(self):
         return self.request.user
         
-# get doctors visits and patients
-# Access a patients information using their ref id
 
+# Email validity view
+class CheckEmailView(generics.GenericAPIView):
+    serializer=EmailCheckSerializer
+    permission_classes=[AllowAny]
+    throttle_classes=[AnonRateThrottle]
 
-# Medical records -> link doctor to appointments. 
-# When fetchng a doctors patients, fetch records where the doctor is a part of and get the related patient data.
-# When fetching appointments, fetch app appointments where the doctor is booked and then prepopulate with their data as well as their medical records/history.
-# figure out how to fetch patients in doctors service.
-# Check whether it would be better to have the doctors enter their own specializations or have them pre-recorded in the system for them to pass reference ids.
-# Certificates and practicing licences processing for verification of the person registering as a doctor.
+    def get(self, request, *args, **kwargs):
+        email=request.query_params.get('email')
+        if not email:
+            return Response({"error":"Email parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer=self.serializer(data={'email':email})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

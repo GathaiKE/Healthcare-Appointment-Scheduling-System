@@ -2,7 +2,6 @@ amqp==5.3.1
 argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
 asgiref==3.8.1
-attrs==25.3.0
 billiard==4.2.1
 celery==5.4.0
 cffi==1.17.1
@@ -16,10 +15,6 @@ django-environ==0.12.0
 django_csp==3.8
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.5.0
-drf-spectacular==0.28.0
-inflection==0.5.1
-jsonschema==4.23.0
-jsonschema-specifications==2025.4.1
 kombu==5.5.1
 prompt_toolkit==3.0.50
 psycopg==3.2.6
@@ -27,13 +22,9 @@ pycparser==2.22
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
-PyYAML==6.0.2
-referencing==0.36.2
-rpds-py==0.24.0
 six==1.17.0
 sqlparse==0.5.3
 typing_extensions==4.13.0
 tzdata==2025.1
-uritemplate==4.1.1
 vine==5.1.0
 wcwidth==0.2.13

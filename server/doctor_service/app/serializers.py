@@ -4,16 +4,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.conf import settings
 
 from .models import Specialization, License
-from .producer import create_schedue
+from .producer import create_schedue, create_license_entry
 
 Doctor=get_user_model()
-
-class LicenseSerializer(serializers.ModelSerializer):
-    status=serializers.CharField(source='get_status_display')
-    class Meta:
-        model=License
-        fields=['id', 'practicing_certificate_is_valid', 'identity_card_is_valid', 'face_verification', 'status', 'updated_at', 'created_at']
-        read_only_fields=['id', 'status', 'updated_at', 'created_at']
 
 class SpecializationSeriaizer(serializers.ModelSerializer):
     class Meta:
@@ -24,38 +17,33 @@ class SpecializationSeriaizer(serializers.ModelSerializer):
 
 class DoctorManageSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
-    license=LicenseSerializer(required=False)
 
     class Meta:
         model=Doctor
-        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'license', 'password', 'profile', 'id_number', 'updated_at']
-        read_only_fields=['id', 'date_joined', 'license', 'updated_at']
+        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'password', 'profile', 'id_number', 'updated_at']
+        read_only_fields=['id', 'date_joined', 'updated_at']
 
     def create(self, validated_data):
-        doctor=Doctor.objects.create_user(**validated_data, license=License.objects.create())
+        doctor=Doctor.objects.create_user(**validated_data)
+        create_license_entry(doctor.id)
         create_schedue(doctor_id=doctor.id)
         return doctor
 
 class DoctorFetchSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True, required=False, validators=[password_validation.validate_password])
-    license=serializers.SerializerMethodField()
     specialization=serializers.SerializerMethodField()
 
     class Meta:
         model=Doctor
-        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'license', 'password', 'profile', 'id_number', 'updated_at']
-        read_only_fields=['id', 'date_joined', 'license', 'updated_at']
+        fields=['id', 'first_name','last_name', 'surname', 'email', 'phone', 'specialization', 'password', 'profile', 'id_number', 'updated_at']
+        read_only_fields=['id', 'date_joined', 'updated_at']
 
     def get_specialization(self, obj):
         return obj.specialization.title or None
-    
-    def get_license(self, obj):
-        return obj.license.get_status_display() or None
 
     def update(self, instance, validated_data):
         password=validated_data.pop('password', None)
-        license=validated_data.pop('license', None)
-        if password or license:
+        if password:
             pass
         return super().update(instance, validated_data)
 
@@ -124,3 +112,17 @@ class AuthSerializer(TokenObtainPairSerializer):
         data['access']=str(refresh.access_token)
 
         return data
+
+
+class EmailCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Doctor
+        fields=['email']
+
+    def validate_email(self, email):
+        if self.Meta.model.objects.filter(email__iexact=email).exists():
+            return email
+        return email
+    
+    def to_representation(self, instance):
+        return {"exists": self.Meta.model.objects.filter(email__iexact=self.validated_data['email']).exists()}

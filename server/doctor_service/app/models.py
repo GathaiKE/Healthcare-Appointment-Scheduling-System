@@ -25,64 +25,64 @@ class Specialization(models.Model):
         return self.title
 
     
-class License(models.Model):
-    class LicenseStatus(models.IntegerChoices):
-        PENDING=0, 'Pending',
-        APPROVED=1, 'Approved',
-        DISAPPROVED=2,'Disapproved',
-        SUSPENDED=3, 'Suspended',
-        CANCELLED=4, 'Cancelled'
-    id=models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    practicing_certificate_is_valid=models.BooleanField(default=False)
-    identity_card_is_valid=models.BooleanField(default=False)
-    face_verification=models.BooleanField(default=False)
-    status=models.IntegerField(choices=LicenseStatus.choices, default=LicenseStatus.PENDING)
-    created_at=models.DateTimeField(auto_now_add=True)
-    updated_at=models.DateTimeField(auto_now=True)
+# class License(models.Model):
+#     class LicenseStatus(models.IntegerChoices):
+#         PENDING=0, 'Pending',
+#         APPROVED=1, 'Approved',
+#         DISAPPROVED=2,'Disapproved',
+#         SUSPENDED=3, 'Suspended',
+#         CANCELLED=4, 'Cancelled'
+#     id=models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+#     practicing_certificate_is_valid=models.BooleanField(default=False)
+#     identity_card_is_valid=models.BooleanField(default=False)
+#     face_verification=models.BooleanField(default=False)
+#     status=models.IntegerField(choices=LicenseStatus.choices, default=LicenseStatus.PENDING)
+#     created_at=models.DateTimeField(auto_now_add=True)
+#     updated_at=models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.status
+#     def __str__(self):
+#         return self.status
 
-    def grant_license(self):
-        if self.status==self.LicenseStatus.DISAPPROVED:
-            raise ValueError("This license has already been cancelled")
+#     def grant_license(self):
+#         if self.status==self.LicenseStatus.DISAPPROVED:
+#             raise ValueError("This license has already been cancelled")
         
-        if self.status == self.LicenseStatus.CANCELLED:
-            raise ValueError("This license has been permanently cancelled")
+#         if self.status == self.LicenseStatus.CANCELLED:
+#             raise ValueError("This license has been permanently cancelled")
         
-        if self.practicing_certificate_is_valid and self.identity_card_is_valid and self.face_verification:
-            self.status=self.LicenseStatus.APPROVED
+#         if self.practicing_certificate_is_valid and self.identity_card_is_valid and self.face_verification:
+#             self.status=self.LicenseStatus.APPROVED
 
-        return self
+#         return self
 
-    def suspend_license(self):
-        if self.status==self.LicenseStatus.CANCELLED or self.status==self.LicenseStatus.DISAPPROVED:
-            raise ValueError("License has been permanently cancelled")
-        if self.status==self.LicenseStatus.PENDING:
-            raise ValueError("License has not been approved yet")
-        if self.status==self.LicenseStatus.SUSPENDED:
-            raise ValueError("License has already been suspended")
-        self.status=self.LicenseStatus.SUSPENDED
-        return self
+#     def suspend_license(self):
+#         if self.status==self.LicenseStatus.CANCELLED or self.status==self.LicenseStatus.DISAPPROVED:
+#             raise ValueError("License has been permanently cancelled")
+#         if self.status==self.LicenseStatus.PENDING:
+#             raise ValueError("License has not been approved yet")
+#         if self.status==self.LicenseStatus.SUSPENDED:
+#             raise ValueError("License has already been suspended")
+#         self.status=self.LicenseStatus.SUSPENDED
+#         return self
 
-    def cancel_license(self):
-        if self.status==self.LicenseStatus.CANCELLED:
-            raise ValueError("License has been permanently cancelled")
-        if self.status==self.LicenseStatus.PENDING:
-            raise ValueError("License has not been approved yet")
-        if  self.status==self.LicenseStatus.DISAPPROVED:
-            raise ValueError("The licence application was rejected")
+#     def cancel_license(self):
+#         if self.status==self.LicenseStatus.CANCELLED:
+#             raise ValueError("License has been permanently cancelled")
+#         if self.status==self.LicenseStatus.PENDING:
+#             raise ValueError("License has not been approved yet")
+#         if  self.status==self.LicenseStatus.DISAPPROVED:
+#             raise ValueError("The licence application was rejected")
         
-        self.status=self.LicenseStatus.CANCELLED
-        return self
+#         self.status=self.LicenseStatus.CANCELLED
+#         return self
 
-    def disapprove_licence(self):
-        if  self.status==self.LicenseStatus.PENDING:
-            self.status=self.LicenseStatus.DISAPPROVED
+#     def disapprove_licence(self):
+#         if  self.status==self.LicenseStatus.PENDING:
+#             self.status=self.LicenseStatus.DISAPPROVED
         
-        if self.status==self.LicenseStatus.APPROVED or self.status==self.LicenseStatus.SUSPENDED or self.status==self.LicenseStatus.CANCELLED:
-            raise ValueError("This application has already proceeded beyond this stage.")
-        return self
+#         if self.status==self.LicenseStatus.APPROVED or self.status==self.LicenseStatus.SUSPENDED or self.status==self.LicenseStatus.CANCELLED:
+#             raise ValueError("This application has already proceeded beyond this stage.")
+#         return self
     
 class Doctor(AbstractUser):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
@@ -94,7 +94,7 @@ class Doctor(AbstractUser):
     id_number=models.CharField(max_length=100, unique=True, blank=False, null=False)
     profile=models.CharField(max_length=200, null=True, blank=True)
     specialization=models.ForeignKey(Specialization, on_delete=models.CASCADE)
-    license=models.OneToOneField(License, on_delete=models.CASCADE)
+    # license=models.OneToOneField(License, on_delete=models.CASCADE)
     updated_at=models.DateTimeField(blank=True, null=True)
     username = None
 

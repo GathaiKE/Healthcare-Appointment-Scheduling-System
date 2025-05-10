@@ -1,11 +1,10 @@
 import os
-from django.conf import settings
 
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'doctor_service.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api_gateway.settings')
 
-app=Celery('doctor_service')
+app=Celery('api_gateway')
 
 app.config_from_object("django.conf.settings", namespace="CELERY")
 

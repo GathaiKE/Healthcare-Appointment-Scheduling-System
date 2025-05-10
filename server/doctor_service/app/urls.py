@@ -1,10 +1,10 @@
 from django.urls import path
 
-from .views import RegisterDoctorView, LogInView, SpecializationView, DoctorsListView, DoctorDetailAPIView, DoctorPasswordUpdateView, ResetPasswordView, CurrentUserView, CheckEmailView
+from .views import LogInView, SpecializationView, DoctorsListView, DoctorDetailAPIView, DoctorPasswordUpdateView, ResetPasswordView, CurrentUserView, CheckEmailView
 
 urlpatterns=[
     # Anon routes
-    path('register/', RegisterDoctorView.as_view(), name='doctor-register'),
+    # path('register/', RegisterDoctorView.as_view(), name='doctor-register'),
     path('login/', LogInView.as_view(), name='login'),
     path('reset-password/<str:pk>/', ResetPasswordView.as_view(), name="reset-password"),
     path('check-email/', CheckEmailView.as_view(), name='check-email'),

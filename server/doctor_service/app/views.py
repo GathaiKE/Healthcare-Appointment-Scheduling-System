@@ -12,11 +12,6 @@ from .producer import unlink_records, delete_schedule
 
 Doctor=get_user_model()
 
-class RegisterDoctorView(generics.CreateAPIView):
-    serializer_class=DoctorManageSerializer
-    permission_classes=[AllowAny]
-    throttle_classes=[AnonRateThrottle]
-
 class LogInView(APIView):
     serializer_class=AuthSerializer
     permission_classes=[AllowAny]
@@ -134,3 +129,8 @@ class CheckEmailView(generics.GenericAPIView):
         serializer=self.serializer(data={'email':email})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+# class RegisterDoctorView(generics.CreateAPIView):
+#     serializer_class=DoctorManageSerializer
+#     permission_classes=[AllowAny]
+#     throttle_classes=[AnonRateThrottle]

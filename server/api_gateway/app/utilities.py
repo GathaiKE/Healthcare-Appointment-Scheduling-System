@@ -1,6 +1,7 @@
 import requests, re
 from rest_framework import status, serializers
 from rest_framework.response import Response
+from django.db import models
 
 class PasswordValidator:
     def validate(self, password):
@@ -30,3 +31,14 @@ class EmailValidator:
             return False, Response("Email already exists", status=status.HTTP_403_FORBIDDEN)
         else:
             return True, None
+
+
+class UserRoles:
+    PUBLIC=0,"public"
+    PATIENT=1, "patient"
+    DOCTOR=2, 'doctor'
+    STAFF=3, 'staff'
+    ADMIN=4, 'admin'
+    SUPERADMIN=5, 'superuser'
+
+

@@ -1,8 +1,4 @@
-roles=[
-    'staff',
-    'admin',
-    'superuser'
-]
+
 class BasePermissions():
     pass
 

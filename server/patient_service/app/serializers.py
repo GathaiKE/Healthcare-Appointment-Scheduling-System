@@ -116,7 +116,7 @@ class AuthSerializer(TokenObtainPairSerializer):
 
         try:
             authenticate_kwargs['request']=self.context['request']
-        except KeyError:
+        except KeyError as e:
             pass
 
         self.user=authenticate(**authenticate_kwargs)

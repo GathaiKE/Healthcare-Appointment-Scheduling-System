@@ -29,37 +29,51 @@ class PatientViewSet(viewsets.ViewSet):
     
     def retrieve(self, request, pk=None):
         fetcher=DataFetcher(request_headers=request)
-        instance, error=fetcher.fetch_patient_detail(pk)
-        if  error:
-            return error
-        return instance
+        response, error=fetcher.fetch_patient_detail(pk)
+        if  error and response is None:
+            return Response({"detail":f"{error.get('error')}: {error.get('detail')}"}, status=error.get('status'))
+        return Response(response['data'], status=response.get('status', status.HTTP_200_OK))
+    
     
     def list(self, request):
         fetcher=DataFetcher(request_headers=request.headers)
-        patients, error=fetcher.fetch_patients()
-        print(f"PATIENTS RESPONSE OBJECT: ", patients)
-        print(f"PATIENTS ERROR OBJECT: ", error)
-        if error:
-            return Response({"detail":f"Error: {error.get('detail')}"}, status=status.HTTP_401_UNAUTHORIZED)
-        return patients
+        response, error=fetcher.fetch_patients()
+        if error and response is None:
+            return Response({"detail":f"Error: {error.get('detail')}"}, status=error.get('status'))
+        return Response(response['data'], status=response.get('status', status.HTTP_200_OK))
     
     def destroy(self, request, pk=None):
         manager=UserDataManager(request_headers=request.headers)
         response, err=manager.delete_patient(pk)
         if err:
-            return err
-        return response
+            return Response(response.reason, status=response.status_code)
+        return Response(response.content, status=response.status_code)
 
     @action(detail=False, methods=["post"])
     def login(self, request):
         serializer=AuthenticationDataSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         authenticator=Authenticator(request_headers=request.headers)
-        auth_response, err=authenticator.patient_login(serializer.validated_data)
+        result, error=authenticator.patient_login(serializer.validated_data)
 
-        if err:
-            return Response({"detail":f"Error: {err.get('detail') if err['detail'] else err.get('error')}"}, status=status.HTTP_400_BAD_REQUEST)
-        return auth_response
+        if error:
+            return Response(
+                {
+                    'error': error['error'],
+                    'detail': error['detail'],
+                    **error.get('original_response', {})
+                },
+                status=error.get('status', status.HTTP_500_INTERNAL_SERVER_ERROR)
+            )
+            
+        return Response(
+            result['data'], 
+            status=result.get('status', status.HTTP_200_OK)
+        )
 
     
 class DoctorViewSet(viewsets.ViewSet):

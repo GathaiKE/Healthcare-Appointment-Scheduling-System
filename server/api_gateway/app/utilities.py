@@ -167,6 +167,9 @@ class Authenticator(ServiceAddress):
                 'status': status.HTTP_503_SERVICE_UNAVAILABLE
             }
 
+    def current_user(self):
+        pass
+
 class DataFetcher(ServiceAddress):
     def fetch_patients(self):
         try:
@@ -191,8 +194,6 @@ class DataFetcher(ServiceAddress):
         try:
             response=requests.get(url=f"{self.patients_endpoint}/{pk}/", headers=self.request_headers)
 
-            print(f"RESPONSE: {response}")
-
             if response.status_code==status.HTTP_200_OK:
                 return {"data":response.json(), "status": response.status_code}, None
             
@@ -207,7 +208,6 @@ class DataFetcher(ServiceAddress):
             }
         
         except requests.exceptions.RequestException as e:
-            print(f"Network error: {str(e)}")
             return None, {
                 "error": "Service Unavailable",
                 "detail": "Patient service unreachable",
@@ -215,13 +215,12 @@ class DataFetcher(ServiceAddress):
             }
 
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
             return None, {
                 "error": "Internal Server Error",
                 "detail": "An unexpected error occurred",
                 "status": status.HTTP_500_INTERNAL_SERVER_ERROR
             }
-        
+
     def fetch_doctors(self):
         try:
             response=requests.get(f"{self.doctors_endpoint}", None, headers=self.request_headers)

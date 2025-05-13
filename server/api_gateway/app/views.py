@@ -9,6 +9,39 @@ from .serializers import DoctorDataSerializer, AdminSerializer, PatientSerialize
 from .permissions import IsSuperAdmin
 from .utilities import UserRoles, DataFetcher, UserDataManager, Authenticator
 
+
+class AuthenticationViewSet(viewsets.ViewSet):
+    permission_classes=[AllowAny]
+    throttle_classes=[AnonRateThrottle]
+
+    @action(detail=False, methods=["post"])
+    def login(self, request):
+        serializer=AuthenticationDataSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        authenticator=Authenticator(request_headers=request.headers)
+        result, error=authenticator.patient_login(serializer.validated_data)
+
+        if error:
+            return Response(
+                {
+                    'error': error['error'],
+                    'detail': error['detail'],
+                    **error.get('original_response', {})
+                },
+                status=error.get('status', status.HTTP_500_INTERNAL_SERVER_ERROR)
+            )
+            
+        return Response(
+            result['data'], 
+            status=result.get('status', status.HTTP_200_OK)
+        )
+    
+
+
 class PatientViewSet(viewsets.ViewSet):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
@@ -28,7 +61,7 @@ class PatientViewSet(viewsets.ViewSet):
         return Response({"detail":f"Update for patient {serializer.data.get('email')} in initiated"}, status=status.HTTP_202_ACCEPTED)
     
     def retrieve(self, request, pk=None):
-        fetcher=DataFetcher(request_headers=request)
+        fetcher=DataFetcher(request_headers=request.headers)
         response, error=fetcher.fetch_patient_detail(pk)
         if  error and response is None:
             return Response({"detail":f"{error.get('error')}: {error.get('detail')}"}, status=error.get('status'))

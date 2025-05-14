@@ -155,3 +155,4 @@ class AuthenticationDataSerializer(serializers.Serializer):
         write_only=True,
         required=True
     )
+    

@@ -1,12 +1,13 @@
-import requests, re, json
+import requests, re, json, jwt
 from rest_framework import status, serializers
 from rest_framework.response import Response
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class ServiceAddress:
-    def __init__(self, request_headers):
+    def __init__(self, request):
         from django.conf import settings
-        self.request_headers=request_headers
+        self.request=request
+        self.request_headers=request.headers
         self.patients_base_url=settings.PATIENT_SERVICE_ADDRESS
         self.patients_endpoint=f"{self.patients_base_url}/patients"
         self.doctors_base_url=settings.DOCTOR_SERVICE_ADDRESS
@@ -59,7 +60,7 @@ class UserRoles:
     ADMIN=4, 'admin'
     SUPERADMIN=5, 'superuser'
 
-class Authenticator(ServiceAddress):
+class Authenticator(ServiceAddress, JWTAuthentication):
     def patient_login(self, validated_data):
         try:
             response=requests.post(f"{self.patients_endpoint}/login/", headers=self.request_headers, json=validated_data, timeout=5)
@@ -167,8 +168,68 @@ class Authenticator(ServiceAddress):
                 'status': status.HTTP_503_SERVICE_UNAVAILABLE
             }
 
+    def get_unvalidated_token(self, raw_token):
+        return jwt.decode(raw_token, options={'verify_signature':False})
+    
     def current_user(self):
-        pass
+        headers=self.get_header(self.request)
+        if not headers:
+            title, detail=self.error_mapping.get(401)
+            return None, {'error':title,'detail':detail, 'status':status.HTTP_401_UNAUTHORIZED}
+        
+        try:
+            raw_token=self.get_raw_token(headers)
+            payload=self.get_unvalidated_token(raw_token)
+        except Exception as e:
+            return None, {
+                "error": "Internal Server Error",
+                "detail": "An unexpected error occurred",
+                "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "original_error": str(e)
+            }
+        
+        issuer=payload.get('iss')
+
+        issuer_routes={
+            'patient_service':self.patients_endpoint,
+            'doctor_service':self.doctors_endpoint,
+            'administrator':self.admins_endpoint
+        }
+
+        route=issuer_routes.get(issuer)
+
+        try:
+            response=requests.get(f"{route}/me/", headers=self.request_headers, timeout=5)
+
+            if response.status_code == status.HTTP_200_OK:
+                return {
+                    'data': response.json(),
+                    'status': response.status_code
+                }, None
+            
+            default_error=f"HTTP {response.status_code}", response.text
+            error, detail = self.error_mapping.get(response.status_code, default_error)
+            return None,{
+                "error": error,
+                'detail': detail,
+                "status": response.status_code
+            }
+        
+        except requests.exceptions.RequestException as e:
+            return None, {
+                "error": "Service Unavailable",
+                "detail": "Patient service unreachable",
+                "status": status.HTTP_503_SERVICE_UNAVAILABLE,
+                "original_error": str(e)
+            }
+
+        except Exception as e:
+            return None, {
+                "error": "Internal Server Error",
+                "detail": "An unexpected error occurred",
+                "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "original_error": str(e)
+            }
 
 class DataFetcher(ServiceAddress):
     def fetch_patients(self):

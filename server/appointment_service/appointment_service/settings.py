@@ -151,6 +151,7 @@ REST_FRAMEWORK={
         'doctor':'2000/hour'
     }
 }
+
 SIMPLE_JWT = {
     'ISSUER':['patient_service', 'doctor_service'],
     'AUDIENCE':'appointment_service',

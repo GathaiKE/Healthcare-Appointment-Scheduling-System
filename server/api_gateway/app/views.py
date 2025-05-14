@@ -11,8 +11,13 @@ from .utilities import UserRoles, DataFetcher, UserDataManager, Authenticator
 
 
 class AuthenticationViewSet(viewsets.ViewSet):
+    
+
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
+
+    
+
 
     @action(detail=False, methods=["post"])
     def login(self, request):
@@ -40,6 +45,15 @@ class AuthenticationViewSet(viewsets.ViewSet):
             status=result.get('status', status.HTTP_200_OK)
         )
     
+    @action(detail=False, methods=["get"])
+    def me(self, request):
+        authenticator=Authenticator(request=request)
+        result, error = authenticator.current_user()
+
+        if error and result is None:
+            return Response({"detail":f"{error.get('error')}: {error.get('detail')}", 'original_error': error.get('original_error', '')}, status=error.get('status'))
+        return Response(result["data"], status=result.get('status', status.HTTP_200_OK))
+
 
 
 class PatientViewSet(viewsets.ViewSet):
@@ -61,7 +75,7 @@ class PatientViewSet(viewsets.ViewSet):
         return Response({"detail":f"Update for patient {serializer.data.get('email')} in initiated"}, status=status.HTTP_202_ACCEPTED)
     
     def retrieve(self, request, pk=None):
-        fetcher=DataFetcher(request_headers=request.headers)
+        fetcher=DataFetcher(request=request)
         response, error=fetcher.fetch_patient_detail(pk)
         if  error and response is None:
             return Response({"detail":f"{error.get('error')}: {error.get('detail')}"}, status=error.get('status'))
@@ -69,14 +83,14 @@ class PatientViewSet(viewsets.ViewSet):
     
     
     def list(self, request):
-        fetcher=DataFetcher(request_headers=request.headers)
+        fetcher=DataFetcher(request=request)
         response, error=fetcher.fetch_patients()
         if error and response is None:
             return Response({"detail":f"Error: {error.get('detail')}"}, status=error.get('status'))
         return Response(response['data'], status=response.get('status', status.HTTP_200_OK))
     
     def destroy(self, request, pk=None):
-        manager=UserDataManager(request_headers=request.headers)
+        manager=UserDataManager(request=request)
         response, err=manager.delete_patient(pk)
         if err:
             return Response(response.reason, status=response.status_code)
@@ -90,7 +104,7 @@ class PatientViewSet(viewsets.ViewSet):
                 serializer.errors, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        authenticator=Authenticator(request_headers=request.headers)
+        authenticator=Authenticator(request=request)
         result, error=authenticator.patient_login(serializer.validated_data)
 
         if error:

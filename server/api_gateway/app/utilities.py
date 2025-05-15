@@ -2,6 +2,7 @@ import requests, re, json, jwt
 from rest_framework import status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from enum import Enum
 
 class ServiceAddress:
     def __init__(self, request):
@@ -21,38 +22,62 @@ class ServiceAddress:
         400: ("Bad Request", "Invalid input data"),
         401: ("Unauthorized", "Invalid credentials"),
         403: ("Forbidden", "Account disabled or locked"),
-        404: ("Not Found", "User account not found"),
-        429: ("Too Many Requests", "Login attempts exceeded")
+        404: ("Not Found", "Record not found"),
+        429: ("Too Many Requests", "Request attempt limit exceeded")
     }
 
-class PasswordValidator:
-    def validate(self, password):
+class PasswordValidator:     
+    def validate(self, password, user=None):
             if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', password):
-                return False, serializers.ValidationError("Password must be at least 8 characters long with 1 uppercase, 1 lowercase, 1 digit, and 1 special character (@$!%*?&)")
-            return True, None
-
+                raise serializers.ValidationError("Password must be at least 8 characters long with 1 uppercase, 1 lowercase, 1 digit, and 1 special character (@$!%*?&)")
+    
     def get_help_text(self):
         return ("Your password must contain at least 8 characters with a mix of uppercase, lowercase, numbers, and special characters (@$!%*?&).")
 
-class EmailValidator:
-    def __init__(self, service_address):
-        self.service_address=service_address
-        self.endpoint=f"{service_address}/check-email/"
+class EmailValidator(ServiceAddress):
+    def __init__(self, request, service):
+        super().__init__(request=request)
+        self.service=service
 
-    def validate(self, email, timeout=2.0):
-        try:
-            response=requests.get(url=f"{self.endpoint}/", params={'email':email}, timeout=timeout)
-        except Exception as e:
-            return False, Response({"error":"Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-        response.raise_for_status()
-        data=response.json()
-        if data['exists']:
-            return False, Response("Email already exists", status=status.HTTP_403_FORBIDDEN)
+    def validate(self, email):
+        if str(self.service).lower() not in ['patients', 'doctors', 'admins']:
+            return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":"Service provided is not recognized"}
+
+        if self.service=='doctors':
+            validation_endpoint=self.doctors_endpoint
+        elif self.service=='patients':
+            validation_endpoint=self.patients_endpoint
+        elif self.service=='admins':
+            validation_endpoint=self.admins_endpoint
         else:
-            return True, None
+            validation_endpoint=None
 
-class UserRoles:
+        if validation_endpoint is None:
+            return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":f"{validation_endpoint} is not a valid address"}
+
+        try:
+            response=requests.get(url=f"{validation_endpoint}/check-email/", headers=self.request_headers, params={'email':email}, timeout=2.0)
+            data=response.json()
+            print(f"EMAIL VALIDATION RESPONSE: {data}")
+            if response.status_code==status.HTTP_200_OK:
+                    return True, None
+            if response.status_code==status.HTTP_400_BAD_REQUEST:
+                if data['email']:
+                    return False, {"detail":data["email"], "error":"Bad Request", "status": status.HTTP_400_BAD_REQUEST}
+                return False, {"detail":response.reason, "status": status.HTTP_400_BAD_REQUEST}
+                
+            default_error=f"HTTP {response.status_code}", response.text
+            title, detail=self.error_mapping.get(response.status_code, default_error)
+            return False, {
+                "error": title,
+                "detail":detail,
+                "status":response.status_code,
+                "original_error":response.json()
+            }
+        except Exception as e:
+            return False, {"error":"Internal Server Error","detail":str(e), "status":status.HTTP_500_INTERNAL_SERVER_ERROR}
+
+class UserRoles(Enum):
     PUBLIC=0,"public"
     PATIENT=1, "patient"
     DOCTOR=2, 'doctor'

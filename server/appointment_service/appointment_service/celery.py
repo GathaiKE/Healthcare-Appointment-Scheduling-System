@@ -7,8 +7,5 @@ app=Celery('appointment_service')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# app.conf.task_routes={
-#     'appointments.tasks.*':{'queue':'appointments'}
-# }
 
 app.autodiscover_tasks()

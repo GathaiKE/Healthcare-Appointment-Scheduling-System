@@ -14,3 +14,5 @@ app=Celery('patient_service', broker='amqp://admin:admin@localhost:5672/tiberbuh
 @receiver(pre_delete, sender=Patient)
 def delete_patient_handler(sender, instance, **kwargs):
     app.send_task('appointment_service.tasks.cancel_patients_appointments', args=[instance.id])
+
+

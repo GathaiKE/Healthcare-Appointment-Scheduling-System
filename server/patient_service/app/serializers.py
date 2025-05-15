@@ -130,3 +130,17 @@ class AuthSerializer(TokenObtainPairSerializer):
         data['access']=str(refresh.access_token)
 
         return data
+
+
+class EmailCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Patient
+        fields=['email']
+
+    def validate_email(self, email):
+        if self.Meta.model.objects.filter(email__iexact=email).exists():
+            return email
+        return email
+    
+    def to_representation(self, instance):
+        return {"exists": self.Meta.model.objects.filter(email__iexact=self.validated_data['email']).exists()}

@@ -12,6 +12,7 @@ class BaseUserSerializer(serializers.Serializer):
     surname=serializers.CharField(required=True)
     email=serializers.EmailField(required=True)
     phone=serializers.CharField(required=True)
+    gender=serializers.IntegerField(required=True)
     password=serializers.CharField(write_only=True, required=True, validators=[password_validation.validate_password])
     profile=serializers.CharField(required=False)
     id_number=serializers.CharField(required=True)
@@ -19,26 +20,32 @@ class BaseUserSerializer(serializers.Serializer):
     updated_at=serializers.DateTimeField(read_only=True)
     deleted_at=serializers.DateTimeField(read_only=True)
 
+    class Meta:
+        fields = ["id","first_name","last_name","surname","email","phone","password","profile", "gender", "id_number","date_joined","updated_at","deleted_at"]
+
     def create(self, validated_data):
-        role=validated_data.pop('role', UserRoles.PUBLIC)
-        if not role:
+        role=validated_data.pop('role', None)
+        request=self.context.get('request')
+
+        if request is None:
+            raise ValueError("No request headers provided.")
+        
+        if role is None:
             raise ValueError("A recognized user role is required.")
-        if role not in UserRoles:
+        
+        if role not in [role for role in UserRoles]:
             raise ValueError("The role provided is not recognized by the system.")
         
-        email_value, email_err =self.validate_email(validated_data.get('email'), role)
-        if email_value is None and email_err:
-            return email_err
-        pass_value, pass_error=self.validate_password(validated_data.get('password'))
-        if pass_value is None and pass_error:
-            return pass_error
+        validated_email =self.check_email(value=validated_data.get('email'), request=request, role=role)
+        
+        validated_data["email"]=validated_email
         
         if role==UserRoles.PATIENT:
             register_patient(validated_data)
         elif role==UserRoles.DOCTOR:
             register_doctor(validated_data)
         elif role==UserRoles.STAFF or role==UserRoles.ADMIN or role==UserRoles.SUPERADMIN:
-            validated_data.add('role', role)
+            validated_data['role']=role
             register_admin(validated_data)
         else:
             raise ValueError("User role provided is incorrect or invalid")
@@ -46,10 +53,15 @@ class BaseUserSerializer(serializers.Serializer):
         return validated_data
     
     def update(self, instance, validated_data):
-        role=validated_data.pop('role', UserRoles.PUBLIC)
-        if not role:
+        role=validated_data.pop('role', None)
+        request=self.context.get('request')
+
+
+        if request is None:
+            raise ValueError("No request headers provided.")
+        if role is None:
             raise ValueError("A recognized user role is required.")
-        if role not in UserRoles:
+        if role not in [role.value for role in UserRoles]:
             raise ValueError("The role provided is not recognized by the system.")
         
         fetcher=DataFetcher()
@@ -68,12 +80,12 @@ class BaseUserSerializer(serializers.Serializer):
             return err
         
 
-        email_value, email_err =self.validate_email(validated_data.get('email'), role)
-        if email_value  and email_err is None:
-            return Response({"detail":"User not found"})
+        validated_email=self.check_email(value=validated_data.get("email"), request=request, role=role)
+
+        validated_data["email"]=validated_email
         
         password=validated_data.pop('password', None)
-        if password:
+        if password is not None:
             pass
         
         if role==UserRoles.PATIENT:
@@ -81,47 +93,38 @@ class BaseUserSerializer(serializers.Serializer):
         elif role==UserRoles.DOCTOR:
             manager.update_doctor(self.request,validated_data)
         elif role==UserRoles.STAFF or role==UserRoles.ADMIN or role==UserRoles.SUPERADMIN:
-            validated_data.add('role', role)
+            validated_data['role']=role
             manager.update_admin(self.request,validated_data)
         else:
             raise ValueError("User role provided is incorrect or invalid")
 
         return validated_data
 
-    def validate_email(self, value, role:UserRoles):
+    def check_email(self, value, request, role:UserRoles):
         if not role:
-            raise ValueError("A user role is needed to verify account ownership.")
+            return ValueError("A user role is needed to verify account ownership.")
         if role not in UserRoles:
             raise ValueError("The role provided is not recognized by the system.")
-        from django.conf import settings
-
-        base_url=settings.BASE_URL
-        if role==UserRoles.PATIENT or role==UserRoles.PUBLIC:
-            verification_suffix='patients'
+        
+        if role==UserRoles.PATIENT:
+            verification_service='patients'
         elif role==UserRoles.DOCTOR:
-            verification_suffix='doctors'
+            verification_service='doctors'
         elif role==UserRoles.STAFF or role==UserRoles.ADMIN or role==UserRoles.SUPERADMIN:
-            verification_suffix='admins'
+            verification_service='admins'
         else:
-            verification_suffix=None
+            verification_service=None
 
-        if verification_suffix is None:
+        if verification_service is None:
             raise ValueError("You cannot register a public member")
         
-        email_validator = EmailValidator(service_address=f"{base_url}/{verification_suffix}/")
+        email_validator = EmailValidator(service=verification_service, request=request)
         is_available, err = email_validator.validate(value)
 
-        if not is_available:
-            return None, err
-        return value, None
+        if is_available and err is None:
+            return value
+        raise serializers.ValidationError({"detail":f"{err['error']}:{err['detail']}", "status":err.get('status', status.HTTP_400_BAD_REQUEST)})
     
-    def validate_password(self, value):
-        password_validator=PasswordValidator()
-        is_valid, err = password_validator.validate(value)
-
-        if not is_valid:
-            return None, Response({"error":f"Password validation error: {err}"})
-        return value, None
 
 class DoctorDataSerializer(BaseUserSerializer):
     specialization=serializers.CharField(required=True)
@@ -131,15 +134,22 @@ class AdminSerializer(BaseUserSerializer):
     role=serializers.HiddenField(default=UserRoles.STAFF)
 
 class NextOfKinSerializer(serializers.Serializer):
-    class Meta:
-        fields=['id', 'first_name', 'last_name', 'phone', 'email', 'relationship', 'created_at', 'updated_at', 'deleted_at']
-        read_only_fields=['id', 'created_at', 'updated_at', 'deleted_at']
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    phone = serializers.CharField(required=True)
+    relationship = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
 
 class PatientSerializer(BaseUserSerializer):
     next_of_kin=NextOfKinSerializer(required=True, many=False)
     occupation=serializers.CharField()
     residence=serializers.CharField()
     role=serializers.HiddenField(default=UserRoles.PATIENT)
+
+    class Meta:
+        fields = BaseUserSerializer.Meta.fields + [
+            'next_of_kin', 'occupation', 'residence', 'role'
+        ]
 
 
 class AuthenticationDataSerializer(serializers.Serializer):

@@ -54,15 +54,12 @@ class AuthenticationViewSet(viewsets.ViewSet):
             return Response({"detail":f"{error.get('error')}: {error.get('detail')}", 'original_error': error.get('original_error', '')}, status=error.get('status'))
         return Response(result["data"], status=result.get('status', status.HTTP_200_OK))
 
-
-
 class PatientViewSet(viewsets.ViewSet):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
     def create(self, request, *args, **kwargs):
-        request.data.update({'role',UserRoles.PATIENT})
-        serializer=PatientSerializer(data=request.data)
+        serializer=PatientSerializer(data=request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
         serializer.create(serializer.validated_data)
         return Response({"detail":f"Registration for patient {serializer.data.get('email')} in progress"}, status=status.HTTP_202_ACCEPTED)
@@ -80,8 +77,7 @@ class PatientViewSet(viewsets.ViewSet):
         if  error and response is None:
             return Response({"detail":f"{error.get('error')}: {error.get('detail')}"}, status=error.get('status'))
         return Response(response['data'], status=response.get('status', status.HTTP_200_OK))
-    
-    
+      
     def list(self, request):
         fetcher=DataFetcher(request=request)
         response, error=fetcher.fetch_patients()

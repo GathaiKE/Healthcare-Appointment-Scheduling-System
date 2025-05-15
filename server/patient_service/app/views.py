@@ -6,15 +6,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,EmailCheckSerializer
 from .permissions import IsOwnerOrAdmin
 
 Patient=get_user_model()
 
-class CreatePatientView(generics.CreateAPIView):
-    serializer_class=PatientSerializer
-    permission_classes=[AllowAny]
-    throttle_classes=[AnonRateThrottle]
+# class CreatePatientView(generics.CreateAPIView):
+#     serializer_class=PatientSerializer
+#     permission_classes=[AllowAny]
+#     throttle_classes=[AnonRateThrottle]
 
 class AuthenticateView(APIView):
     serialializer_class=AuthSerializer
@@ -112,3 +112,18 @@ class PatientActiveStatusView(generics.RetrieveUpdateAPIView):
                 return Response({"detail":f"{patient.fist_name} {patient.last_name} is aready {"active" if patient.is_active else "inactive"}"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+
+# Email validity view
+class CheckEmailView(generics.GenericAPIView):
+    serializer=EmailCheckSerializer
+    permission_classes=[AllowAny]
+    throttle_classes=[UserRateThrottle]
+
+    def get(self, request, *args, **kwargs):
+        email=request.query_params.get('email')
+        if not email:
+            return Response({"error":"Email parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer=self.serializer(data={'email':email})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

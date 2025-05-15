@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import CreatePatientView, CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientUpdateView
+from .views import CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientUpdateView,CheckEmailView
 
 urlpatterns=[
     # Public Endpoinys
-    path('register/', CreatePatientView.as_view(), name='create-patient'),
     path("login/", AuthenticateView.as_view(), name="patient-login"),
+    path('check-email/', CheckEmailView.as_view(), name='check-email'),
 
     # Authenticated endpoints
     path("me/", CurrentUserView.as_view(), name="current-patient"),

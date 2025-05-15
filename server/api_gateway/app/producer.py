@@ -5,8 +5,8 @@ def register_doctor(validated_data):
     app.send_task("register_doctor", args=[message], queue='doctors')
 
 def register_patient(validated_data):
-    message={'action':"register_patient",'data':validated_data}
-    app.send_task("register_patient", args=[message], queue='patients')
+    message={'action':"register",'data':validated_data}
+    app.send_task("process.registration", args=[message], queue='patients')
 
 
 def register_admin(validated_data):

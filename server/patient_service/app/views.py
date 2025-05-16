@@ -7,14 +7,9 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
 from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,EmailCheckSerializer
-from .permissions import IsOwnerOrAdmin
+from .permissions import IsOwnerOrAdmin, IsOwner
 
 Patient=get_user_model()
-
-# class CreatePatientView(generics.CreateAPIView):
-#     serializer_class=PatientSerializer
-#     permission_classes=[AllowAny]
-#     throttle_classes=[AnonRateThrottle]
 
 class AuthenticateView(APIView):
     serialializer_class=AuthSerializer
@@ -49,11 +44,22 @@ class PatientsListView(generics.ListAPIView):
     permission_classes=[IsAuthenticated]
     throttle_classes=[AnonRateThrottle]
 
-class PatientUpdateView(generics.UpdateAPIView):
+class PatientSelfUpdateView(generics.UpdateAPIView):
     queryset=Patient.objects.all()
     serializer_class=PatientSerializer
-    permission_classes=[IsAuthenticated]
+    permission_classes=[IsAuthenticated, IsOwner]
     throttle_classes=[UserRateThrottle]
+
+    def get_object(self):
+        return self.request.user
+
+    # def update(self, request, *args, **kwargs):
+    #     instance=self.get_object()
+    #     serializer=self.get_serializer(data=request.data)
+    #     if not serializer.is_valid():
+    #         return Response({"errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    #     serializer.update(validated_data=serializer.validated_data, instance=instance)
+    #     return Response({"detail":"Update successful"}, status=status.HTTP_202_ACCEPTED)
 
 class PatientDetailView(generics.RetrieveDestroyAPIView):
     queryset=Patient.objects.all()
@@ -101,7 +107,7 @@ class PatientActiveStatusView(generics.RetrieveUpdateAPIView):
         if patient == request.user and not request.data.get('is_staff', True):
             return Response({"detail":"Cannot change your own status"}, status=status.HTTP_403_FORBIDDEN)
         serializer=self.get_serializer(data=request.data)
-        new_status=request.data,get('is_active')
+        new_status=request.data.get('is_active')
 
         if serializer.is_valid():
             if patient.is_active != new_status:

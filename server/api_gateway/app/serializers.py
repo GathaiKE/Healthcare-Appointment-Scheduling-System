@@ -52,53 +52,6 @@ class BaseUserSerializer(serializers.Serializer):
 
         return validated_data
     
-    def update(self, instance, validated_data):
-        role=validated_data.pop('role', None)
-        request=self.context.get('request')
-
-
-        if request is None:
-            raise ValueError("No request headers provided.")
-        if role is None:
-            raise ValueError("A recognized user role is required.")
-        if role not in [role.value for role in UserRoles]:
-            raise ValueError("The role provided is not recognized by the system.")
-        
-        fetcher=DataFetcher()
-        manager=UserDataManager()
-
-        if role==UserRoles.PATIENT:
-            user, err=fetcher.fetch_patient_detail(instance.id)
-        elif role==UserRoles.DOCTOR:
-            user, err=fetcher.fetch_doctor_detail(instance.id)
-        elif role==UserRoles.STAFF or role==UserRoles.ADMIN or role==UserRoles.SUPERADMIN:
-            user, err=fetcher.fetch_admin_detail(instance.id)
-        else:
-            raise ValueError("User role provided is incorrect or invalid")
-        
-        if err and user is None:
-            return err
-        
-
-        validated_email=self.check_email(value=validated_data.get("email"), request=request, role=role)
-
-        validated_data["email"]=validated_email
-        
-        password=validated_data.pop('password', None)
-        if password is not None:
-            pass
-        
-        if role==UserRoles.PATIENT:
-            manager.update_patient(self.request,validated_data)
-        elif role==UserRoles.DOCTOR:
-            manager.update_doctor(self.request,validated_data)
-        elif role==UserRoles.STAFF or role==UserRoles.ADMIN or role==UserRoles.SUPERADMIN:
-            validated_data['role']=role
-            manager.update_admin(self.request,validated_data)
-        else:
-            raise ValueError("User role provided is incorrect or invalid")
-
-        return validated_data
 
     def check_email(self, value, request, role:UserRoles):
         if not role:

@@ -58,7 +58,6 @@ class EmailValidator(ServiceAddress):
         try:
             response=requests.get(url=f"{validation_endpoint}/check-email/", headers=self.request_headers, params={'email':email}, timeout=2.0)
             data=response.json()
-            print(f"EMAIL VALIDATION RESPONSE: {data}")
             if response.status_code==status.HTTP_200_OK:
                     return True, None
             if response.status_code==status.HTTP_400_BAD_REQUEST:
@@ -256,6 +255,33 @@ class Authenticator(ServiceAddress, JWTAuthentication):
                 "original_error": str(e)
             }
 
+    def request_destination(self):
+        headers=self.get_header(self.request)
+        if not headers:
+            title, detail=self.error_mapping.get(401)
+            return None, {'error':title,'detail':detail, 'status':status.HTTP_401_UNAUTHORIZED}
+        
+        try:
+            raw_token=self.get_raw_token(headers)
+            payload=self.get_unvalidated_token(raw_token)
+        except Exception as e:
+            return None, {
+                "error": "Internal Server Error",
+                "detail": "An unexpected error occurred",
+                "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "original_error": str(e)
+            }
+        
+        issuer=payload.get('iss')
+
+        issuer_routes={
+            'patient_service':self.patients_endpoint,
+            'doctor_service':self.doctors_endpoint,
+            'administrator':self.admins_endpoint
+        }
+
+        return issuer_routes.get(issuer), None
+
 class DataFetcher(ServiceAddress):
     def fetch_patients(self):
         try:
@@ -348,17 +374,58 @@ class DataFetcher(ServiceAddress):
         return None, response
     
 class UserDataManager(DataFetcher):
-    def update_patient(self, request, validated_data):
+    def update_self_data(self, validated_data):
+        authenticator=Authenticator(request=self.request)
+        role=validated_data.pop('role', None)
+
+        if role:
+            pass
+
+        try:
+            route, error=authenticator.request_destination()
+        except Exception as e:
+            return None, {'error': response.reason, 'detail': str(e), 'status':response.status_code}
+        
         try:
             response=requests.put(
-                f"{self.patients_endpoint}/{request.pk}/update/",
+                f"{route}/self/update/",
                 headers=self.request_headers,
-                data=validated_data,
-                timeout=2
+                json=validated_data,
+                timeout=5.0
             )
-            return response, None
-        except:
-            return None, Response({"error":f"Internal server error: {response}"})
+            if response.status_code==status.HTTP_200_OK:
+                return {"detail":"Success","data":response.json(), "status": response.status_code}, None
+            if response.status_code == status.HTTP_400_BAD_REQUEST:
+                try:
+                    error_detail = response.json()
+                except requests.exceptions.JSONDecodeError:
+                    error_detail = response.text
+                return None, {
+                    "error": response.reason,
+                    "detail": error_detail,
+                    "status": response.status_code,
+                    "data": error_detail
+                }
+            if response.status_code==status.HTTP_401_UNAUTHORIZED:
+                data=response.json()
+                return None, {
+                    "detail": data.get("detail", self.error_mapping.get(response.status_code)),
+                    "error": data.get('messages')[0]['message'],
+                    "status": response.status_code,
+                    "original_error": response.json()
+                }
+            
+            default_error=f"HTTP {response.status_code}", response.text
+            title, detail=self.error_mapping.get(response.status_code, default_error)
+
+            return {
+                'error': title,
+                'detail':detail,
+                'status':response.status_code,
+                'original_error':response.json()
+            }
+        except Exception as e:
+            return None, {'error': response.reason, 'detail': str(e), 'status':response.status_code}
 
     def update_doctor(self, request, validated_data):
         try:
@@ -387,10 +454,12 @@ class UserDataManager(DataFetcher):
     def delete_patient(self, patient_id):
         try:
             response=requests.delete(f"{self.patients_endpoint}/{patient_id}/", headers=self.request_headers, timeout=5)
+            if response.status_code==status.HTTP_204_NO_CONTENT:
+                return {"detail":"Patient deleted successfully", "status":response.status_code}, None
 
-            if response.status_code==204:
-                return Response({"detail":"Patient deleted successfully"}, status=status.HTTP_204_NO_CONTENT), None
-            return response, None
+            data=response.json()
+            print(f"DELETE PATIENT RESPONSE: {data}")
+            return None, {"error":f"{response.reason}","detail":data['detail'], "status":response.status_code}
         except:
             return None, Response({"error":"Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         

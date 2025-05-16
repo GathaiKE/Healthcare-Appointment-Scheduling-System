@@ -40,7 +40,7 @@ class PatientSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         password=validated_data.pop('password', None)
 
-        updated_next_of_kin=validated_data.pop('next_of_kin')
+        updated_next_of_kin=validated_data.pop('next_of_kin', None)
 
         if updated_next_of_kin:
             next_of_kin=instance.next_of_kin

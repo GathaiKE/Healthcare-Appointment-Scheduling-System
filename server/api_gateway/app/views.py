@@ -11,13 +11,8 @@ from .utilities import UserRoles, DataFetcher, UserDataManager, Authenticator
 
 
 class AuthenticationViewSet(viewsets.ViewSet):
-    
-
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
-
-    
-
 
     @action(detail=False, methods=["post"])
     def login(self, request):
@@ -64,12 +59,16 @@ class PatientViewSet(viewsets.ViewSet):
         serializer.create(serializer.validated_data)
         return Response({"detail":f"Registration for patient {serializer.data.get('email')} in progress"}, status=status.HTTP_202_ACCEPTED)
 
-    def update(self, request, *args, **kwargs):
-        request.data.update({'role',UserRoles.PATIENT})
+    @action(detail=False, methods=["put"])
+    def selfupdate(self, request, *args, **kwargs):
         serializer=PatientSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.update(serializer.validated_data)
-        return Response({"detail":f"Update for patient {serializer.data.get('email')} in initiated"}, status=status.HTTP_202_ACCEPTED)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        manager=UserDataManager(request=request)
+        result, error=manager.update_self_data(validated_data=serializer.validated_data)
+        if result is None and error:
+            return Response({"detail":f"{error['error']}:{error['detail']}"}, status=error.get('status',status.HTTP_400_BAD_REQUEST))
+        return Response({'detail': result['detail'],'data':result['data']}, status=result.get('status', status.HTTP_202_ACCEPTED))
     
     def retrieve(self, request, pk=None):
         fetcher=DataFetcher(request=request)
@@ -88,9 +87,9 @@ class PatientViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         manager=UserDataManager(request=request)
         response, err=manager.delete_patient(pk)
-        if err:
-            return Response(response.reason, status=response.status_code)
-        return Response(response.content, status=response.status_code)
+        if err and response is None:
+            return Response({"detail":f"{err['error']}:{err['detail']}"}, status=err['status'])
+        return Response({"detail":response['detail']}, status=response['status'])
 
     @action(detail=False, methods=["post"])
     def login(self, request):

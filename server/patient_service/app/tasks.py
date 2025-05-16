@@ -11,7 +11,6 @@ def register_patient(message):
     action=message.get('action')
     data=message.get('data')
 
-    logger.info(f"DATA:{data['next_of_kin']}")
 
     if action=='register':
         serializer=PatientSerializer(data=data)

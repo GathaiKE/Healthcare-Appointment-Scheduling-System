@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,EmailCheckSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer
 from .permissions import IsOwnerOrAdmin, IsOwner
 
 Patient=get_user_model()
@@ -52,14 +52,6 @@ class PatientSelfUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-
-    # def update(self, request, *args, **kwargs):
-    #     instance=self.get_object()
-    #     serializer=self.get_serializer(data=request.data)
-    #     if not serializer.is_valid():
-    #         return Response({"errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    #     serializer.update(validated_data=serializer.validated_data, instance=instance)
-    #     return Response({"detail":"Update successful"}, status=status.HTTP_202_ACCEPTED)
 
 class PatientDetailView(generics.RetrieveDestroyAPIView):
     queryset=Patient.objects.all()
@@ -117,19 +109,22 @@ class PatientActiveStatusView(generics.RetrieveUpdateAPIView):
             else:
                 return Response({"detail":f"{patient.fist_name} {patient.last_name} is aready {"active" if patient.is_active else "inactive"}"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
-
-# Email validity view
-class CheckEmailView(generics.GenericAPIView):
-    serializer=EmailCheckSerializer
+class CheckUniqueDetailsView(generics.GenericAPIView):
     permission_classes=[AllowAny]
     throttle_classes=[UserRateThrottle]
 
     def get(self, request, *args, **kwargs):
         email=request.query_params.get('email')
+        id_number=request.query_params.get('id_number')
+        phone=request.query_params.get('phone')
         if not email:
             return Response({"error":"Email parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
-        serializer=self.serializer(data={'email':email})
+        if not id_number:
+            return Response({"error":"Id number parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not phone:
+            return Response({"error":"Phone parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer=UniqueDetailsAvailabilitySerializer(data={'email':email, 'id_number':id_number, 'phone':phone})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

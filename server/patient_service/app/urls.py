@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientSelfUpdateView,CheckEmailView
+from .views import CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientSelfUpdateView,CheckUniqueDetailsView
 
 urlpatterns=[
     # Public Endpoints
     path("login/", AuthenticateView.as_view(), name="patient-login"),
-    path('check-email/', CheckEmailView.as_view(), name='check-email'),
+    path('details-available/', CheckUniqueDetailsView.as_view(), name='verify-unique-details'),
 
     # Authenticated endpoints
     path("me/", CurrentUserView.as_view(), name="current-patient"),

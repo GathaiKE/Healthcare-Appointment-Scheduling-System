@@ -5,7 +5,7 @@ from rest_framework import status, generics, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
-from .serializers import DoctorDataSerializer, AdminSerializer, PatientSerializer, AuthenticationDataSerializer
+from .serializers import DoctorDataSerializer, AdminSerializer, PatientSerializer, AuthenticationDataSerializer,PasswordChangeSerializer
 from .permissions import IsSuperAdmin
 from .utilities import UserRoles, DataFetcher, UserDataManager, Authenticator
 
@@ -48,6 +48,18 @@ class AuthenticationViewSet(viewsets.ViewSet):
         if error and result is None:
             return Response({"detail":f"{error.get('error')}: {error.get('detail')}", 'original_error': error.get('original_error', '')}, status=error.get('status'))
         return Response(result["data"], status=result.get('status', status.HTTP_200_OK))
+
+    @action(detail=False, methods=['put'])
+    def changepassword(self, request):
+        serializer=PasswordChangeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        manager=UserDataManager(request=request)
+        result, error=manager.change_password(validated_data=serializer.validated_data)
+
+        if result is None and error:
+            return Response({"detail":f"{error['error']}:{error['detail']}"}, status=error.get('status', status.HTTP_400_BAD_REQUEST))
+        return Response({"detail": result['detail'], "data":result['data']}, status=result.get('status', status.HTTP_200_OK))
 
 class PatientViewSet(viewsets.ViewSet):
     permission_classes=[AllowAny]

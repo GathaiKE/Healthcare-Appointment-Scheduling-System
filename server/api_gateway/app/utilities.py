@@ -34,12 +34,12 @@ class PasswordValidator:
     def get_help_text(self):
         return ("Your password must contain at least 8 characters with a mix of uppercase, lowercase, numbers, and special characters (@$!%*?&).")
 
-class EmailValidator(ServiceAddress):
+class RegDetailsValidator(ServiceAddress):
     def __init__(self, request, service):
         super().__init__(request=request)
         self.service=service
 
-    def validate(self, email):
+    def validate(self, validated_data):
         if str(self.service).lower() not in ['patients', 'doctors', 'admins']:
             return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":"Service provided is not recognized"}
 
@@ -56,7 +56,7 @@ class EmailValidator(ServiceAddress):
             return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":f"{validation_endpoint} is not a valid address"}
 
         try:
-            response=requests.get(url=f"{validation_endpoint}/check-email/", headers=self.request_headers, params={'email':email}, timeout=2.0)
+            response=requests.get(url=f"{validation_endpoint}/details-available/", headers=self.request_headers, params={'email':validated_data['email'], 'id_number':validated_data['id_number'], 'phone':validated_data['phone']}, timeout=2.0)
             data=response.json()
             if response.status_code==status.HTTP_200_OK:
                     return True, None
@@ -426,6 +426,49 @@ class UserDataManager(DataFetcher):
             }
         except Exception as e:
             return None, {'error': response.reason, 'detail': str(e), 'status':response.status_code}
+
+    def change_password(self, validated_data):
+        authenticator=Authenticator(request=self.request)
+
+        try:
+            route, error=authenticator.request_destination()
+            if route is None and error:
+                return None, {"error":"Bad request", "detail":"Invalid service route", "status":status.HTTP_400_BAD_REQUEST}
+        except Exception as e:
+            return None, {'error': "Internal Server Error", 'detail': str(e), 'status':status.HTTP_500_INTERNAL_SERVER_ERROR}
+
+
+        try:
+            response=requests.put(f"{route}/me/password/", headers=self.request_headers, json=validated_data, timeout=5.0)
+
+            if response.status_code==status.HTTP_200_OK:
+                return {
+                    "data":response.json(),
+                    "status": response.status_code,
+                    "detail":"Success"
+                }, None
+            
+            default_error=f"HTTP {response.status_code}", response.text
+            title,detail=self.error_mapping.get(response.status_code, default_error)
+            return None, {
+                'error': title,
+                'detail': detail,
+                'status':response.status_code,
+                'original_error': response.json()
+            }
+        except requests.exceptions.Timeout:
+            return None, {
+                'error': 'Gateway Timeout',
+                'detail': 'Requested service timed out',
+                'status': status.HTTP_504_GATEWAY_TIMEOUT
+            }
+
+        except requests.exceptions.RequestException as e:
+            return None, {
+                'error': 'Service Unavailable',
+                'detail': 'Requested service unavailable',
+                'status': status.HTTP_503_SERVICE_UNAVAILABLE
+            }
 
     def update_doctor(self, request, validated_data):
         try:

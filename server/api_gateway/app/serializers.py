@@ -2,7 +2,7 @@ from rest_framework import serializers, status
 from django.contrib.auth import password_validation
 from rest_framework.response import Response
 
-from .utilities import EmailValidator, PasswordValidator,UserRoles, DataFetcher, UserDataManager
+from .utilities import RegDetailsValidator, PasswordValidator,UserRoles, DataFetcher, UserDataManager
 from .producer import register_admin, register_doctor, register_patient
 
 class BaseUserSerializer(serializers.Serializer):
@@ -53,7 +53,7 @@ class BaseUserSerializer(serializers.Serializer):
         return validated_data
     
 
-    def check_email(self, value, request, role:UserRoles):
+    def check_email(self, validated_data, request, role:UserRoles):
         if not role:
             return ValueError("A user role is needed to verify account ownership.")
         if role not in UserRoles:
@@ -71,11 +71,11 @@ class BaseUserSerializer(serializers.Serializer):
         if verification_service is None:
             raise ValueError("You cannot register a public member")
         
-        email_validator = EmailValidator(service=verification_service, request=request)
-        is_available, err = email_validator.validate(value)
+        email_validator = RegDetailsValidator(service=verification_service, request=request)
+        is_available, err = email_validator.validate(validated_data)
 
         if is_available and err is None:
-            return value
+            return validated_data
         raise serializers.ValidationError({"detail":f"{err['error']}:{err['detail']}", "status":err.get('status', status.HTTP_400_BAD_REQUEST)})
     
 
@@ -119,3 +119,19 @@ class AuthenticationDataSerializer(serializers.Serializer):
         required=True
     )
     
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password=serializers.CharField(
+        label=('old_password'),
+        trim_whitespace=False,
+        style={'input_type':'password'},
+        write_only=True,
+        required=True
+    )
+    new_password=serializers.CharField(
+        label=('new_password'),
+        trim_whitespace=False,
+        style={'input_type':'password'},
+        write_only=True,
+        required=True
+    )

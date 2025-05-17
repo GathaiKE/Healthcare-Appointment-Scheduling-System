@@ -132,15 +132,31 @@ class AuthSerializer(TokenObtainPairSerializer):
         return data
 
 
-class EmailCheckSerializer(serializers.ModelSerializer):
+class UniqueDetailsAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model=Patient
-        fields=['email']
+        fields=['email', 'id_number', 'phone']
 
-    def validate_email(self, email):
-        if self.Meta.model.objects.filter(email__iexact=email).exists():
-            return email
-        return email
-    
     def to_representation(self, instance):
-        return {"exists": self.Meta.model.objects.filter(email__iexact=self.validated_data['email']).exists()}
+        result = {}
+        validated_data = self.validated_data
+        
+        if 'email' in validated_data:
+            result['email_exists'] = self.Meta.model.objects.filter(email__iexact=validated_data['email']).exists()
+        if 'id_number' in validated_data:
+            result['id_number_exists'] = self.Meta.model.objects.filter(id_number__iexact=validated_data['id_number']).exists()
+        if 'phone' in validated_data:
+            result['phone_exists'] = self.Meta.model.objects.filter(phone__iexact=validated_data['phone']).exists()
+        
+        return result
+
+
+def validate_id_number(self, id_number):
+    if self.Meta.model.objects.filter(id_number__iexact=id_number).exists():
+        return id_number
+    return id_number
+
+def validate_phone(self, phone):
+    if self.Meta.model.objects.filter(phone__iexact=phone).exists():
+        return phone
+    return phone

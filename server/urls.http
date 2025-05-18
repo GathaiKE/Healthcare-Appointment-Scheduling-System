@@ -2,36 +2,36 @@ POST http://127.0.0.1:8000/api/v1/patients/login/
 Content-Type: application/json
 
 {
-    "email":"johndoe@gmail.com",
+    "email":"lenaealf@gmail.com",
     "password": "Patient@@1"
 }
 
 
 ###
 GET http://127.0.0.1:8000/api/v1/patients/
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3MDUzNDI3LCJpYXQiOjE3NDcwNTE2MjcsImp0aSI6ImQ4YmM0MDU1YWVkYzQxNGI5ZTc5ZTAzODFlM2NkY2NjIiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.IuIs-EOjO3lasRihNAGjM9J34IlDGCY_AysXqWVSmCXOXj_lIwStgcMF9o7BgPXmhTT1TmQS6-DEwi4MOgqSzOReyWnBiU4vXS7DY5NABurBqck8-m-LwgIq6636fFA2JfoRhVDNkjXWq6HSWRcO0pCUbQqFO3S3os0P4TJq4hxQD7v_N_g_fige2dlW3mImT1zAqCK6WjKpWAKOaXryIS9Ly-PSLr02DDShIxxt4C3D39R56tIIjSA3bEiHMbqIuVPOybT5dDnpeLxXdng_KS13qReuO5vzr0haiIcjH52vSBmbxP9mEBowMkhTrwo2uLUjkc5qEHEeNRxsyFltmw
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NTk3Mzg0LCJpYXQiOjE3NDc1OTU1ODQsImp0aSI6IjFiMzViYjU2YmJjZTQ1MTZhZjYyMDc3ZDA2YzUzMjlhIiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.Dji5qp1GhJkkqO1BGXD5AKgjie02BWcmMaDvqTaC7HhfA-S4IYSQ8AFjpPBAoV890XG2Yl06D7N70XwmaUXgWm1iin_lY5t327zjH6Lj--JvKnDekpzpF1LNbptYaYoWpe7pLTUjut7iSzvQo1x7J1nNcAkWx4mW0lD0D2xfl_uZqW2LR-yFxYKcn7eSMceLFM6Zjg5zQIe4UAFNVZh7yhmBh2uyobRJ1UZbKvwxclT7I72CTT5mNP8xoAcELawWSrBr3ACK9XHKlTOkbJ_sfMe-30DUJw_egbRqdwWxCXLqD2KzFMUDAFgw3jGUPOxY9qhCdQDt31Qyr226jju2wA
 
 ###
 POST http://127.0.0.1:8000/api/v1/patients/
 Content-Type: application/json
 
 {
-    "first_name":"Alfred",
-    "last_name":"Lenae",
-    "surname":"Raztaf",
+    "first_name":"Lenny",
+    "last_name":"Wamunyoro",
+    "surname":"Gachagua",
     "email":"lenaealf@gmail.com",
     "password":"Patient@@1",
-    "phone":"254700000002",
+    "phone":"254700000005",
     "id_number":"12345675",
-    "residence": "Ukunda, Kwale",
-    "occupation": "Fisherman",
+    "residence": "Langas, Eldoret",
+    "occupation": "Farmer",
     "gender":0,
     "next_of_kin":{
-        "first_name":"Mwanaisha",
-        "last_name":"Latifa",
+        "first_name":"Annet",
+        "last_name":"Chebet",
         "phone":"254722112212",
         "relationship":"Wife",
-        "email":"latifamwanaisha@opp.email"
+        "email":"annetchebet@wife.email"
     }
 }
 ###
@@ -77,7 +77,18 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
     "new_password":"Patient@@1"
 }
 
+
 ###
+PUT http://127.0.0.1:8000/api/v1/patients/0f19b5c2-0633-4d36-a458-3d0d9fc8929d/resetpassword/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3NTk3Mzg0LCJpYXQiOjE3NDc1OTU1ODQsImp0aSI6IjFiMzViYjU2YmJjZTQ1MTZhZjYyMDc3ZDA2YzUzMjlhIiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.Dji5qp1GhJkkqO1BGXD5AKgjie02BWcmMaDvqTaC7HhfA-S4IYSQ8AFjpPBAoV890XG2Yl06D7N70XwmaUXgWm1iin_lY5t327zjH6Lj--JvKnDekpzpF1LNbptYaYoWpe7pLTUjut7iSzvQo1x7J1nNcAkWx4mW0lD0D2xfl_uZqW2LR-yFxYKcn7eSMceLFM6Zjg5zQIe4UAFNVZh7yhmBh2uyobRJ1UZbKvwxclT7I72CTT5mNP8xoAcELawWSrBr3ACK9XHKlTOkbJ_sfMe-30DUJw_egbRqdwWxCXLqD2KzFMUDAFgw3jGUPOxY9qhCdQDt31Qyr226jju2wA
+
+{
+    "new_password":"Patient@@1"
+}
+
+###
+
 DELETE http://127.0.0.1:8000/api/v1/patients/82844eb4-a215-4af2-a13a-4030758e644c/
 Authorization: Token eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3MzM2ODc2LCJpYXQiOjE3NDczMzUwNzYsImp0aSI6Ijg0ZTQ1OWZlN2Y4NjQ4MThiOWNkN2RmYWU4YjZlNTA1IiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.Tva9YsKudawzPH9aBw9eUre8sGA-XIuKkPoYxbBWBg3XYMDjP0oQzpsFYY8Ikct8Wq8WlqYpKbWMyDWR0PzWBZ12qSTPvzV4_wWK059FHAD5o-7H7wcnEfC0lPEgllKyAdqJoAZnso2BsRRl-P0Rknx0cfobSPSl4MOLWtf6_eGOOxs8nLT6WNR7hgvHgq8e8Mc1FLUI4bmDSp5N1BacWiizf5QNg1gSjFVezel67Oa4hS8XCKADypYeYQINDm6x6ZOLYrHqkatoDHjLOD8TuXktFRkceYluQ-1nhAI7nQ9Q5_mYSSaolxh7v7pcF6XvwaB8TdBTuZqrYlRp4kq_Mw
 

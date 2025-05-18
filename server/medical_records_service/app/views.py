@@ -48,7 +48,6 @@ class AppointmentPatientHistoryView(generics.ListAPIView):
 
     def get_queryset(self):
         patiend_id=self.kwargs['patient_id']
-        print(f"PATIENT ID: {patiend_id}")
         return MedicalRecord.objects.prefetch_related(
             Prefetch(
                 'recordownership_set',

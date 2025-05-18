@@ -26,6 +26,17 @@ class ServiceAddress:
         429: ("Too Many Requests", "Request attempt limit exceeded")
     }
 
+    def get_route_from_role(self, role):
+        routes={
+            UserRoles.PATIENT: self.patients_endpoint,
+            UserRoles.DOCTOR: self.doctors_endpoint,
+            UserRoles.ADMIN: self.admins_endpoint,
+            UserRoles.ADMIN: self.admins_endpoint,
+            UserRoles.ADMIN: self.admins_endpoint
+        }
+
+        return routes.get(role)
+
 class PasswordValidator:     
     def validate(self, password, user=None):
             if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', password):
@@ -42,7 +53,7 @@ class RegDetailsValidator(ServiceAddress):
     def validate(self, validated_data):
         if str(self.service).lower() not in ['patients', 'doctors', 'admins']:
             return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":"Service provided is not recognized"}
-
+        
         if self.service=='doctors':
             validation_endpoint=self.doctors_endpoint
         elif self.service=='patients':
@@ -54,25 +65,33 @@ class RegDetailsValidator(ServiceAddress):
 
         if validation_endpoint is None:
             return False, {"error":"Invalid address", "status":status.HTTP_400_BAD_REQUEST, "detail":f"{validation_endpoint} is not a valid address"}
+        params={}
+        for field in ['email', 'phone', 'id_number']:
+            if field in validated_data:
+                params[field]=validated_data[field]
 
         try:
-            response=requests.get(url=f"{validation_endpoint}/details-available/", headers=self.request_headers, params={'email':validated_data['email'], 'id_number':validated_data['id_number'], 'phone':validated_data['phone']}, timeout=2.0)
+            response=requests.get(url=f"{validation_endpoint}/details-available/", headers=self.request_headers, params=params, timeout=2.0)
             data=response.json()
             if response.status_code==status.HTTP_200_OK:
                     return True, None
             if response.status_code==status.HTTP_400_BAD_REQUEST:
-                if data['email']:
-                    return False, {"detail":data["email"], "error":"Bad Request", "status": status.HTTP_400_BAD_REQUEST}
-                return False, {"detail":response.reason, "status": status.HTTP_400_BAD_REQUEST}
+                error_response={}
+                
+                for field in ['email', 'id_number','phone']:
+                    if field in data:
+                        error_response[field]=data[field]
+                return False, {"detail":error_response, "error":"Bad Request", "status": status.HTTP_400_BAD_REQUEST}
                 
             default_error=f"HTTP {response.status_code}", response.text
             title, detail=self.error_mapping.get(response.status_code, default_error)
-            return False, {
+            err={
                 "error": title,
                 "detail":detail,
                 "status":response.status_code,
                 "original_error":response.json()
             }
+            return False, err
         except Exception as e:
             return False, {"error":"Internal Server Error","detail":str(e), "status":status.HTTP_500_INTERNAL_SERVER_ERROR}
 
@@ -470,6 +489,48 @@ class UserDataManager(DataFetcher):
                 'status': status.HTTP_503_SERVICE_UNAVAILABLE
             }
 
+    def reset_password(self, pk, role, validated_data):
+        if role in UserRoles:
+            route=self.get_route_from_role(role)
+        else:
+            return None, {
+                'error': "Bad request",
+                'detail': "Invalid role provided",
+                'status':status.HTTP_400_BAD_REQUEST,
+                "original_error":""
+            }
+        try:
+            response=requests.post(f"{route}/reset-password/{pk}/", headers=self.request_headers, json=validated_data, timeout=5.0)
+            if response.status_code==status.HTTP_202_ACCEPTED:
+                return {
+                    "data":response.json(),
+                    "status": response.status_code,
+                    "detail":"Success"
+                }, None
+            
+            default_error=f"HTTP {response.status_code}", response.text
+            title,detail=self.error_mapping.get(response.status_code, default_error)
+            return None, {
+                'error': title,
+                'detail': detail,
+                'status':response.status_code,
+                'original_error': response.json()
+            }
+        except requests.exceptions.Timeout:
+            return None, {
+                'error': 'Gateway Timeout',
+                'detail': 'Requested service timed out',
+                'status': status.HTTP_504_GATEWAY_TIMEOUT
+            }
+
+        except requests.exceptions.RequestException as e:
+            return None, {
+                'error': 'Service Unavailable',
+                'detail': 'Requested service unavailable',
+                'status': status.HTTP_503_SERVICE_UNAVAILABLE
+            }
+
+
     def update_doctor(self, request, validated_data):
         try:
             response=requests.put(
@@ -501,7 +562,6 @@ class UserDataManager(DataFetcher):
                 return {"detail":"Patient deleted successfully", "status":response.status_code}, None
 
             data=response.json()
-            print(f"DELETE PATIENT RESPONSE: {data}")
             return None, {"error":f"{response.reason}","detail":data['detail'], "status":response.status_code}
         except:
             return None, Response({"error":"Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

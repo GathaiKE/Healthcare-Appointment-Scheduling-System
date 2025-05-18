@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer
 from .permissions import IsOwnerOrAdmin, IsOwner
 
 Patient=get_user_model()
@@ -79,6 +79,28 @@ class PasswordUpdateView(generics.UpdateAPIView):
             return Response({"detail":"Password updated"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ResetPasswordView(APIView):
+    permission_classes=[AllowAny]
+    throttle_classes=[AnonRateThrottle]
+
+    def post(self, request, pk=None):
+        serializer=PasswordResetSerializer(data=request.data)
+
+        if serializer.is_valid():
+            new_password=serializer.data.get('new_password')
+
+            try:
+                doctor=Patient.objects.get(id=pk)
+                doctor.set_password(new_password)
+                doctor.save()
+                return Response({"detail":"Your password was reset successfully"}, status=status.HTTP_202_ACCEPTED)
+            except Patient.DoesNotExist:
+                return Response({"detail":"Patient was not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CurrentUserView(generics.RetrieveAPIView):
     serializer_class=ListPatientSerializer
     permission_classes=[IsAuthenticated]
@@ -126,5 +148,6 @@ class CheckUniqueDetailsView(generics.GenericAPIView):
             return Response({"error":"Phone parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer=UniqueDetailsAvailabilitySerializer(data={'email':email, 'id_number':id_number, 'phone':phone})
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)

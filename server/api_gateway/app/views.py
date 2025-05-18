@@ -5,7 +5,7 @@ from rest_framework import status, generics, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
-from .serializers import DoctorDataSerializer, AdminSerializer, PatientSerializer, AuthenticationDataSerializer,PasswordChangeSerializer
+from .serializers import DoctorDataSerializer, AdminSerializer, PatientSerializer, AuthenticationDataSerializer,PasswordChangeSerializer, PasswordResetSerializer
 from .permissions import IsSuperAdmin
 from .utilities import UserRoles, DataFetcher, UserDataManager, Authenticator
 
@@ -61,13 +61,16 @@ class AuthenticationViewSet(viewsets.ViewSet):
             return Response({"detail":f"{error['error']}:{error['detail']}"}, status=error.get('status', status.HTTP_400_BAD_REQUEST))
         return Response({"detail": result['detail'], "data":result['data']}, status=result.get('status', status.HTTP_200_OK))
 
+
+
 class PatientViewSet(viewsets.ViewSet):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
     def create(self, request, *args, **kwargs):
         serializer=PatientSerializer(data=request.data, context={'request':request})
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.create(serializer.validated_data)
         return Response({"detail":f"Registration for patient {serializer.data.get('email')} in progress"}, status=status.HTTP_202_ACCEPTED)
 
@@ -128,6 +131,18 @@ class PatientViewSet(viewsets.ViewSet):
             result['data'], 
             status=result.get('status', status.HTTP_200_OK)
         )
+
+    @action(detail=True, methods=['put'])
+    def resetpassword(self, request, pk=None):
+        serializer=PasswordResetSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        manager=UserDataManager(request=request)
+        result, error=manager.reset_password(validated_data=serializer.validated_data,role=UserRoles.PATIENT,  pk=pk)
+
+        if result is None and error:
+            return Response({"detail":f"{error['error']}:{error['detail']}"}, status=error.get('status', status.HTTP_400_BAD_REQUEST))
+        return Response({"detail": result['detail'], "data":result['data']}, status=result.get('status', status.HTTP_200_OK))
 
     
 class DoctorViewSet(viewsets.ViewSet):

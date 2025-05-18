@@ -36,9 +36,10 @@ class BaseUserSerializer(serializers.Serializer):
         if role not in [role for role in UserRoles]:
             raise ValueError("The role provided is not recognized by the system.")
         
-        validated_email =self.check_email(value=validated_data.get('email'), request=request, role=role)
-        
-        validated_data["email"]=validated_email
+        verification_response=self.verify_data(validated_data=validated_data, request=request, role=role)
+        validated_data["email"]=verification_response['email']
+        validated_data["id_number"]=verification_response['id_number']
+        validated_data["phone"]=verification_response['phone']
         
         if role==UserRoles.PATIENT:
             register_patient(validated_data)
@@ -53,7 +54,7 @@ class BaseUserSerializer(serializers.Serializer):
         return validated_data
     
 
-    def check_email(self, validated_data, request, role:UserRoles):
+    def verify_data(self, validated_data, request, role:UserRoles):
         if not role:
             return ValueError("A user role is needed to verify account ownership.")
         if role not in UserRoles:
@@ -71,12 +72,12 @@ class BaseUserSerializer(serializers.Serializer):
         if verification_service is None:
             raise ValueError("You cannot register a public member")
         
-        email_validator = RegDetailsValidator(service=verification_service, request=request)
-        is_available, err = email_validator.validate(validated_data)
+        data_validator = RegDetailsValidator(service=verification_service, request=request)
+        data_validity, err = data_validator.validate(validated_data)
 
-        if is_available and err is None:
-            return validated_data
-        raise serializers.ValidationError({"detail":f"{err['error']}:{err['detail']}", "status":err.get('status', status.HTTP_400_BAD_REQUEST)})
+        if not data_validity and err:
+            raise serializers.ValidationError(err['detail'])
+        return validated_data
     
 
 class DoctorDataSerializer(BaseUserSerializer):
@@ -134,4 +135,13 @@ class PasswordChangeSerializer(serializers.Serializer):
         style={'input_type':'password'},
         write_only=True,
         required=True
+    )
+
+class PasswordResetSerializer(serializers.Serializer):
+    new_password=serializers.CharField(
+        label=('new_password'),
+        trim_whitespace=False,
+        style={'input_type':'password'},
+        write_only=True,
+        required=True,
     )

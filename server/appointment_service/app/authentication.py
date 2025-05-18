@@ -37,7 +37,6 @@ class JWTAuthentication(JWTAuthentication):
         
         raw_token=self.get_raw_token(header)
         payload=self.get_unvalidated_token(raw_token)
-        print(f"RAW TOKEN: {raw_token}, PAYLOAD: {payload}")
 
         issuer=payload.get('iss')
         audience=payload.get('aud')

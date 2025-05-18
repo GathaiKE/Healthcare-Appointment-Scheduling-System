@@ -77,6 +77,13 @@ class PasswordUpdateSerializer(serializers.ModelSerializer):
         model=Patient
         fields=['old_password', 'new_password']
 
+class PasswordResetSerializer(serializers.ModelSerializer):
+    new_password=serializers.CharField(required=True, validators=[validate_password])
+
+    class Meta:
+        model=Patient
+        fields=['new_password']
+
 class AuthSerializer(TokenObtainPairSerializer):
     email=serializers.EmailField(
         label=('Email'),
@@ -131,7 +138,6 @@ class AuthSerializer(TokenObtainPairSerializer):
 
         return data
 
-
 class UniqueDetailsAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model=Patient
@@ -149,14 +155,3 @@ class UniqueDetailsAvailabilitySerializer(serializers.ModelSerializer):
             result['phone_exists'] = self.Meta.model.objects.filter(phone__iexact=validated_data['phone']).exists()
         
         return result
-
-
-def validate_id_number(self, id_number):
-    if self.Meta.model.objects.filter(id_number__iexact=id_number).exists():
-        return id_number
-    return id_number
-
-def validate_phone(self, phone):
-    if self.Meta.model.objects.filter(phone__iexact=phone).exists():
-        return phone
-    return phone

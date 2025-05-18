@@ -39,7 +39,6 @@ class RecordSerializer(serializers.ModelSerializer):
     
     def delete(self):
         pk=self.context['pk']
-        print(f'PRIMARY KEY: {pk}')
         instance=MedicalRecord.objects.find(id=pk)
         instance.deleted_at=timezone.now()
         instance.save()

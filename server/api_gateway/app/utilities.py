@@ -107,13 +107,13 @@ class Authenticator(ServiceAddress, JWTAuthentication):
     def patient_login(self, validated_data):
         try:
             response=requests.post(f"{self.patients_endpoint}/login/", headers=self.request_headers, json=validated_data, timeout=5)
-
+            print(f"RESPONSE: {response.status_code}, TEXT: {response.json()}")
             if response.status_code == status.HTTP_201_CREATED:
                 return {"data":response.json(), "status":status.HTTP_201_CREATED}, None
 
             error_mapping=self.error_mapping
 
-            default_error = (f"HTTP {response.status_code}", json.loads(response.text).get('detail')[0])
+            default_error = (f"HTTP {response.status_code}", response.json().get('detail'))
             error_title, error_detail = error_mapping.get(
                 response.status_code, 
                 default_error

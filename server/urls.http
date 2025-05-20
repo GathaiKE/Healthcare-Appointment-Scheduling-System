@@ -2,7 +2,7 @@ POST http://127.0.0.1:8000/api/v1/patients/login/
 Content-Type: application/json
 
 {
-    "email":"lenaealf@gmail.com",
+    "email":"johndoe@gmail.com",
     "password": "Patient@@1"
 }
 

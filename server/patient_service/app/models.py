@@ -3,11 +3,16 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 
 class PatientManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError("Email is required")
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+    def create_user(self, id_number, phone, password=None, **extra_fields):
+        if not id_number:
+            raise ValueError("A national ID or passport number is required")
+        if not phone:
+            raise ValueError("A phone number is required")
+        email=extra_fields.pop('email', None)
+        if email:
+            email=self.normalize_email(email)
+
+        user = self.model(id_number=id_number, phone=phone, email=email, **extra_fields)
         user.set_password(password)
         user.save()
         
@@ -45,9 +50,9 @@ class Patient(AbstractUser):
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=12, unique=True, blank=True)
-    id_number=models.CharField(max_length=100, blank=False, unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    phone = models.CharField(max_length=12, unique=True, blank=False, null=False)
+    id_number=models.CharField(max_length=100, blank=False, unique=True, null=False)
     insurance_provider=models.ForeignKey(InsuranceProvider, on_delete=models.CASCADE, null=True)
     next_of_kin=models.OneToOneField(NextOfKin, on_delete=models.CASCADE, null=True)
     gender=models.IntegerField(choices=Gender.choices, null=False, blank=False)
@@ -57,8 +62,8 @@ class Patient(AbstractUser):
     deleted_at=models.DateTimeField(null=True, blank=True)
     username = None
 
-    USERNAME_FIELD='email'
-    REQUIRED_FIELDS=[]
+    USERNAME_FIELD='id_number'
+    REQUIRED_FIELDS=['phone']
 
     objects = PatientManager()
 

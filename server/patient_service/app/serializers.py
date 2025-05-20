@@ -18,6 +18,7 @@ class NextOfKinSerializer(serializers.ModelSerializer):
 class PatientSerializer(serializers.ModelSerializer):
     password= serializers.CharField(write_only=True, required=False, validators=[validate_password])
     next_of_kin=NextOfKinSerializer(many=False, required=False)
+    email=serializers.EmailField(required=False)
     class Meta:
         model=Patient
         fields=['id', 'first_name', 'last_name', 'surname', 'next_of_kin', 'email', 'phone', 'id_number', 'occupation', 'gender', 'residence', 'password', 'date_joined', 'updated_at', 'deleted_at']
@@ -85,22 +86,20 @@ class PasswordResetSerializer(serializers.ModelSerializer):
         fields=['new_password']
 
 class AuthSerializer(TokenObtainPairSerializer):
-    email=serializers.EmailField(
-        label=('Email'),
-        write_only=True
-    )
+    email=serializers.EmailField(required=False, write_only=True)
+    id_number=serializers.CharField(required=False, write_only=True)
+    phone=serializers.CharField(required=False, write_only=True)
     password=serializers.CharField(
         label=('Password'),
         trim_whitespace=False,
         style={'input_type':'password'},
         write_only=True
     )
-    username_field='email'
 
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields[self.username_field]=serializers.EmailField(label=('Email'), write_only=True)
+        self.fields.pop('username', None)
 
     def get_token(cls, patient):
         token= super().get_token(patient)
@@ -116,17 +115,29 @@ class AuthSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
-        authenticate_kwargs={
-            'email': attrs['email'],
-            'password': attrs['password']
-        }
+        auth_fields=['phone', 'id_number', 'email']
+        provided_fields=[field for field in auth_fields if attrs.get(field)]
+
+        if len(provided_fields) <1:
+            raise ValueError("Please provide a valid phone, email addresss or national id/passport number")
+        if len(provided_fields) >1:
+            raise ValueError("Only one of phone, email addresss or national id/passport number is needed")
+        
+        identifier_field=provided_fields[0]
+        identifier_value=attrs[identifier_field]
+        password=attrs['password']
 
         try:
-            authenticate_kwargs['request']=self.context['request']
-        except KeyError as e:
-            pass
+            user=Patient.objects.get(**{identifier_field:identifier_value})
+        except Patient.DoesNotExist as e:
+            raise serializers.ValidationError({"detail":"Unable to login with provided credentials"}, code='authorization')
 
-        self.user=authenticate(**authenticate_kwargs)
+        if not user.check_password(password):
+            raise serializers.ValidationError({"detail":"Unable to login with provided credentials"}, code='authorization')
+        
+        if not user.is_active:
+            raise serializers.ValidationError({"detail":"User account is inactive"})
+            
 
         if not self.user:
             raise serializers.ValidationError({"detail":"Unable to login with provided credentials"}, code='authorization')

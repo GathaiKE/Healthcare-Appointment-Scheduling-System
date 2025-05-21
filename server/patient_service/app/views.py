@@ -5,6 +5,7 @@ from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer
 from .permissions import IsOwnerOrAdmin, IsOwner
@@ -12,12 +13,12 @@ from .permissions import IsOwnerOrAdmin, IsOwner
 Patient=get_user_model()
 
 class AuthenticateView(APIView):
-    serialializer_class=AuthSerializer
+    serializer_class=AuthSerializer
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
-        serializer=self.serialializer_class(data=request.data, context={'request':request})
+        serializer=self.serializer_class(data=request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
         user=serializer.user
 

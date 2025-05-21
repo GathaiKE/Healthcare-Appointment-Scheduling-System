@@ -79,7 +79,6 @@ class BaseUserSerializer(serializers.Serializer):
             raise serializers.ValidationError(err['detail'])
         return validated_data
     
-
 class DoctorDataSerializer(BaseUserSerializer):
     specialization=serializers.CharField(required=True)
     role=serializers.HiddenField(default=UserRoles.DOCTOR)
@@ -105,21 +104,16 @@ class PatientSerializer(BaseUserSerializer):
             'next_of_kin', 'occupation', 'residence', 'role'
         ]
 
-
 class AuthenticationDataSerializer(serializers.Serializer):
-    email=serializers.EmailField(
-        label=('Email'),
-        write_only=True,
-        required=True
-    )
+    email=serializers.EmailField(write_only=True,required=False)
+    id_number=serializers.CharField(write_only=True,required=False)
+    phone=serializers.CharField(write_only=True,required=False)
     password=serializers.CharField(
         label=('Password'),
         trim_whitespace=False,
         style={'input_type':'password'},
-        write_only=True,
-        required=True
+        write_only=True,required=True
     )
-    
 
 class PasswordChangeSerializer(serializers.Serializer):
     old_password=serializers.CharField(

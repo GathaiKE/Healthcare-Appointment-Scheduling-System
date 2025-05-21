@@ -2,7 +2,17 @@ POST http://127.0.0.1:8000/api/v1/patients/login/
 Content-Type: application/json
 
 {
+    "phone":"254700000002",
+    "password": "Patient@@1"
+}
+
     "email":"johndoe@gmail.com",
+###
+POST  http://127.0.0.1:8006/patients/login/
+Content-Type: application/json
+
+{
+    "phone":"254700000002",
     "password": "Patient@@1"
 }
 

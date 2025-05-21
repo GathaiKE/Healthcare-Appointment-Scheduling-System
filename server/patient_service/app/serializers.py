@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from django.utils import timezone
 
@@ -85,7 +85,7 @@ class PasswordResetSerializer(serializers.ModelSerializer):
         model=Patient
         fields=['new_password']
 
-class AuthSerializer(TokenObtainPairSerializer):
+class AuthSerializer(serializers.Serializer):
     email=serializers.EmailField(required=False, write_only=True)
     id_number=serializers.CharField(required=False, write_only=True)
     phone=serializers.CharField(required=False, write_only=True)
@@ -100,9 +100,11 @@ class AuthSerializer(TokenObtainPairSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields.pop('username', None)
+        self.username=None
+        
 
     def get_token(cls, patient):
-        token= super().get_token(patient)
+        token=RefreshToken.for_user(patient)
 
         token['is_superuser']=patient.is_superuser
         token['is_staff']=patient.is_staff
@@ -139,8 +141,7 @@ class AuthSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError({"detail":"User account is inactive"})
             
 
-        if not self.user:
-            raise serializers.ValidationError({"detail":"Unable to login with provided credentials"}, code='authorization')
+        self.user=user
         
         data={}
         refresh=self.get_token(self.user)
@@ -148,6 +149,12 @@ class AuthSerializer(TokenObtainPairSerializer):
         data['access']=str(refresh.access_token)
 
         return data
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
 
 class UniqueDetailsAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:

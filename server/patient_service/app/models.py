@@ -2,24 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
 
-class PatientManager(BaseUserManager):
-    def create_user(self, id_number, phone, password=None, **extra_fields):
-        if not id_number:
-            raise ValueError("A national ID or passport number is required")
-        if not phone:
-            raise ValueError("A phone number is required")
-        email=extra_fields.pop('email', None)
-        if email:
-            email=self.normalize_email(email)
 
-        user = self.model(id_number=id_number, phone=phone, email=email, **extra_fields)
-        user.set_password(password)
-        user.save()
-        
-        return user
-    
 
-    
 class InsuranceProvider(models.Model):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
     name=models.CharField(blank=False, max_length=200)
@@ -41,6 +25,22 @@ class NextOfKin(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+class PatientManager(BaseUserManager):
+    def create_user(self, id_number, phone, password=None, **extra_fields):
+        if not id_number:
+            raise ValueError("A national ID or passport number is required")
+        if not phone:
+            raise ValueError("A phone number is required")
+        email=extra_fields.pop('email', None)
+        if email:
+            email=self.normalize_email(email)
+
+        user = self.model(id_number=id_number, phone=phone, email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        
+        return user
 
 class Patient(AbstractUser):
     class Gender(models.IntegerChoices):

@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 import re
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
-Patient = get_user_model()
 
 class PasswordValidator:     
     def validate(self, password, user=None):
@@ -11,3 +12,10 @@ class PasswordValidator:
     
     def get_help_text(self):
         return ("Your password must contain at least 8 characters with a mix of uppercase, lowercase, numbers, and special characters (@$!%*?&).")
+
+
+class DatesValidator:
+     def validate_dob(self, value):
+          if timezone.now().date() < value:
+               raise ValidationError("Date of birth cannot be i the future")
+          return value

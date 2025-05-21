@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 import uuid
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
+from .validators import DatesValidator
 
+dob_validator=DatesValidator()
 
 class InsuranceProvider(models.Model):
     id=models.UUIDField(unique=True, editable=False, primary_key=True, default=uuid.uuid4)
@@ -70,3 +74,50 @@ class Patient(AbstractUser):
     def __str__ (self):
         return f"{self.first_name or ''} {self.last_name or ''} {self.surname or ''}"
 
+class Dependent(models.Model):
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    first_name=models.CharField(null=False, blank=False)
+    last_name=models.CharField(null=False, blank=False)
+    surname=models.CharField(null=False, blank=False)
+    email=models.EmailField(unique=True, null=True, blank=True)
+    dob=models.DateField(validators=[dob_validator.validate_dob])
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+
+    @property
+    def age(self):
+        return relativedelta(timezone.now().date(),self.dob).years
+    
+    @property
+    def is_underage(self):
+        return self.age<18
+
+    class Meta:
+        db_table="dependents"
+        verbose_name="Minor"
+        verbose_name_plural="Minors"
+        ordering=['created_at']
+
+class Guardianship(models.Model):
+    class RepationshipTypes(models.TextChoices):
+        FATHER='father', 'Father'
+        MOTHER='mother', 'Mother'
+        GUARDIAN='guardian', 'Guardian'
+
+    id=models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    dependent=models.ForeignKey(Dependent, on_delete=models.DO_NOTHING)
+    patient=models.ForeignKey(Patient, on_delete=models.DO_NOTHING)
+    relationship=models.CharField(null=False, max_length=20, choices=RepationshipTypes.choices)
+    is_chaperone=models.BooleanField(default=False)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table='guardianships'
+        verbose_name='guardianship'
+        verbose_name_plural='guardianships'
+        unique_together=[('dependent', 'relationship')]
+        constraints=[
+            models.UniqueConstraint(fields=['dependent', 'patient'],name='unique_guardian_assignment'),
+            models.CheckConstraint(check=~models.Q(relationship='guardian') | models.Q(is_chaperone=False),name='chaperone_must_be_parent')
+        ]

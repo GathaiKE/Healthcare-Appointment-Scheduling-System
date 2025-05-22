@@ -15,7 +15,11 @@ Content-Type: application/json
 }
 
 ###
-POST http://127.0.0.1:8001/patients/login/
+
+
+
+###
+POST http://127.0.0.1:8006/patients/login/
 Content-Type: application/json
 
 {
@@ -23,6 +27,19 @@ Content-Type: application/json
     "password": "Patient@@1"
 }
 
+###
+POST http://127.0.0.1:8006/patients/minors/register/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ3OTQ5NjQ1LCJpYXQiOjE3NDc5NDc4NDUsImp0aSI6IjBiYWI0M2IzNmZhYzRiM2U4ZmQ4ODE3MmE2OGRmOWU5IiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.HEZCbeZwNvPs1mKA4znp4rdgjwhmjEcrBTn7_QkkWRGhug_FzxQbS1fkicDkjMS7YEELZN7dvONFXXss1mpJ7Vqs-RAifXcz-Ioex-vd-mtzz-wOB2r77oj3Taqhbrd6x8XDZf6FilO6XFvH-5I3CcYmOVh0VqP7G0-E3_KdjKyzvzpw2PWKpNWAXWb9U9BDCoQPV-b0HIkbmzqL8wgybSIpn-bVNg76LAvBkSUTn6Ga3yXwy13USvoi-wDX6xK_OPCxfKaQanP8JuJg3RUQDzNq4R-b-H1p1yt11rMRGXxUXvRB70EYYsVi_yLM-2FshFX2YVrXRDbLXXiyCncW5A
+
+{
+    "first_name":"Genine",
+    "last_name":"mayers",
+    "surname":"Doe",
+    "date_of_birth":"2010-06-10",
+    "guardian":"0374b291-d845-4935-a37d-86dd88543218",
+    "relationship":"father"
+}
 
 ###
 POST http://localhost:8000/patients/login/

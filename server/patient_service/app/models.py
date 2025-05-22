@@ -80,13 +80,14 @@ class Dependent(models.Model):
     last_name=models.CharField(null=False, blank=False)
     surname=models.CharField(null=False, blank=False)
     email=models.EmailField(unique=True, null=True, blank=True)
-    dob=models.DateField(validators=[dob_validator.validate_dob])
+    phone=models.CharField(unique=True, null=True, blank=True)
+    date_of_birth=models.DateField(validators=[dob_validator.validate_dob], default='2000-10-10')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 
     @property
     def age(self):
-        return relativedelta(timezone.now().date(),self.dob).years
+        return relativedelta(timezone.now().date(),self.date_of_birth).years
     
     @property
     def is_underage(self):

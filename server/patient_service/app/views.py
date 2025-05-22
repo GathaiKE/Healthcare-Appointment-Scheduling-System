@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer, MinorPatientSerializer
 from .permissions import IsOwnerOrAdmin, IsOwner
+from .models import Dependent
 
 Patient=get_user_model()
 
@@ -80,7 +81,6 @@ class PasswordUpdateView(generics.UpdateAPIView):
             return Response({"detail":"Password updated"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class ResetPasswordView(APIView):
     permission_classes=[AllowAny]
     throttle_classes=[AnonRateThrottle]
@@ -100,7 +100,6 @@ class ResetPasswordView(APIView):
                 return Response({"detail":"Patient was not found"}, status=status.HTTP_404_NOT_FOUND)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class CurrentUserView(generics.RetrieveAPIView):
     serializer_class=ListPatientSerializer
@@ -152,3 +151,9 @@ class CheckUniqueDetailsView(generics.GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class MinorPatientView(generics.ListCreateAPIView):
+    queryset=Dependent.objects.all()
+    serializer_class=MinorPatientSerializer
+    permission_classes=[IsAuthenticated]
+    throttle_classes=[UserRateThrottle]

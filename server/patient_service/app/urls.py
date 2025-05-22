@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientSelfUpdateView,CheckUniqueDetailsView, ResetPasswordView
+from .views import CurrentUserView, AuthenticateView, PasswordUpdateView,PatientsListView, PatientDetailView, PatientActiveStatusView, PatientSelfUpdateView,CheckUniqueDetailsView, ResetPasswordView,MinorPatientView
 
 urlpatterns=[
     # Public Endpoints
@@ -14,5 +14,6 @@ urlpatterns=[
     path("", PatientsListView.as_view(), name="users-list"),
     path("<str:pk>/", PatientDetailView.as_view(), name="users-detail"),
     path("self/update/", PatientSelfUpdateView.as_view(), name="update-patient"),
-    path("status/<str:pk>/", PatientActiveStatusView.as_view(), name="user-status")
+    path("status/<str:pk>/", PatientActiveStatusView.as_view(), name="user-status"),
+    path('minors/register/', MinorPatientView.as_view(), name='register-minor')
 ]

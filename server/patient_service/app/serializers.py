@@ -5,8 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from django.utils import timezone
 
-from .models import NextOfKin
-Patient=get_user_model()
+from .models import NextOfKin, Guardianship, Dependent, Patient
+from .validators import DatesValidator
 
 
 class NextOfKinSerializer(serializers.ModelSerializer):
@@ -60,6 +60,49 @@ class PatientSerializer(serializers.ModelSerializer):
 
         instance.updated_at=timezone.now()
         return super().update(instance, validated_data)
+
+class MinorPatientSerializer(serializers.ModelSerializer):
+    email=serializers.EmailField(required=False)
+    phone=serializers.CharField(required=False)
+    
+    class Meta:
+        model=Dependent
+        fields=['id','first_name','last_name','surname','age','is_underage','email','phone','date_of_birth', 'guardian', 'relationship','created_at','updated_at']
+        read_only_fields=['id','age','is_underage','created_at','updated_at']
+
+    def create(self, validated_data:dict):
+        guardian=validated_data.pop('guardian', None)
+        relationship=validated_data.pop('relationship', None)
+        dob=validated_data.get("date_of_birth", None)
+
+        print(f"GUARDIAN :{guardian}, RELATIONSHIP: {relationship}, DOB:{dob}")
+
+        if guardian is None:
+            raise serializers.ValidationError("Guardian info must be provided for underage patients.")
+        if relationship is None:
+            raise serializers.ValidationError("Please provide a relationship between the guardian and patient")
+        
+        if relationship.lower() not in ['mother', 'father', 'guardian']:
+            raise serializers.ValidationError("The relationship entries recognized are father, mother or guardian")
+
+        if dob is None:
+            raise serializers.ValidationError("Please provid a valid date of birth")
+        validator=DatesValidator()
+        validated_data['date_of_birth']=validator.validate_dob(dob)
+
+        user=Dependent.objects.create(**validated_data)
+        guardian_data={
+            "relationship":relationship,
+            "patient":guardian,
+            "dependent":user,
+            "is_chaperone":False
+        }
+
+        if relationship in ["mother","father"]:
+            guardian_data['is_chaperone']=True
+
+        guardian=Guardianship.objects.create(**guardian_data)
+        return user
 
 
 class ListPatientSerializer(serializers.ModelSerializer):

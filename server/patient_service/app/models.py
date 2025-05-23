@@ -75,12 +75,16 @@ class Patient(AbstractUser):
         return f"{self.first_name or ''} {self.last_name or ''} {self.surname or ''}"
 
 class Dependent(models.Model):
+    class Gender(models.IntegerChoices):
+        MALE=0, 'male',
+        FEMALE=1, 'female'
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     first_name=models.CharField(null=False, blank=False)
     last_name=models.CharField(null=False, blank=False)
     surname=models.CharField(null=False, blank=False)
     email=models.EmailField(unique=True, null=True, blank=True)
     phone=models.CharField(unique=True, null=True, blank=True)
+    gender=models.IntegerField(choices=Gender.choices, null=False, blank=False, default=Gender.MALE)
     date_of_birth=models.DateField(validators=[dob_validator.validate_dob], default='2000-10-10')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -107,7 +111,7 @@ class Guardianship(models.Model):
 
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     dependent=models.ForeignKey(Dependent, on_delete=models.DO_NOTHING)
-    patient=models.ForeignKey(Patient, on_delete=models.DO_NOTHING)
+    guardian=models.ForeignKey(Patient, on_delete=models.DO_NOTHING)
     relationship=models.CharField(null=False, max_length=20, choices=RepationshipTypes.choices)
     is_chaperone=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
@@ -119,6 +123,6 @@ class Guardianship(models.Model):
         verbose_name_plural='guardianships'
         unique_together=[('dependent', 'relationship')]
         constraints=[
-            models.UniqueConstraint(fields=['dependent', 'patient'],name='unique_guardian_assignment'),
+            models.UniqueConstraint(fields=['dependent', 'guardian'],name='unique_guardian_assignment'),
             models.CheckConstraint(check=~models.Q(relationship='guardian') | models.Q(is_chaperone=False),name='chaperone_must_be_parent')
         ]

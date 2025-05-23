@@ -8,6 +8,7 @@ from django.utils import timezone
 from .models import NextOfKin, Guardianship, Dependent, Patient
 from .validators import DatesValidator
 
+dob_validator=DatesValidator()
 
 class NextOfKinSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,46 +65,67 @@ class PatientSerializer(serializers.ModelSerializer):
 class MinorPatientSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(required=False)
     phone=serializers.CharField(required=False)
-    
     class Meta:
         model=Dependent
-        fields=['id','first_name','last_name','surname','age','is_underage','email','phone','date_of_birth', 'guardian', 'relationship','created_at','updated_at']
+        fields=['id','first_name','last_name','surname','age','is_underage','email','phone', 'gender', 'date_of_birth','created_at','updated_at']
         read_only_fields=['id','age','is_underage','created_at','updated_at']
 
+class GuardianshipSerializer(serializers.Serializer):
+    dependent=MinorPatientSerializer(required=True, many=False)
+    class Meta:
+        fields=['id', 'dependent', 'guardian', 'relationship', 'is_chaperone','created_at','updated_at']
+        read_only_fields=['id','created_at','updated_at']
+
     def create(self, validated_data:dict):
-        guardian=validated_data.pop('guardian', None)
-        relationship=validated_data.pop('relationship', None)
-        dob=validated_data.get("date_of_birth", None)
-
-        print(f"GUARDIAN :{guardian}, RELATIONSHIP: {relationship}, DOB:{dob}")
-
-        if guardian is None:
-            raise serializers.ValidationError("Guardian info must be provided for underage patients.")
+        dependent_data_obj:dict=validated_data.pop("dependent",None)
+        if dependent_data_obj is None:
+            raise serializers.ValidationError("Please provide patient data.")
+        relationship=validated_data.get("relationship")
         if relationship is None:
             raise serializers.ValidationError("Please provide a relationship between the guardian and patient")
         
-        if relationship.lower() not in ['mother', 'father', 'guardian']:
+        if relationship.lower() not in ["mother","father","guardian"]:
             raise serializers.ValidationError("The relationship entries recognized are father, mother or guardian")
-
+        validated_data['relationship']=relationship.lower()
+        dob=dependent_data_obj.get("date_of_birth")
         if dob is None:
             raise serializers.ValidationError("Please provid a valid date of birth")
         validator=DatesValidator()
-        validated_data['date_of_birth']=validator.validate_dob(dob)
+        dependent_data_obj["date_of_birth"]=validator.validate_dob(dob)
+        patient=Dependent.objects.create(**dependent_data_obj)
+        # guardian_data={"dependent_id":patient,**validated_data}
+        # if relationship in ["mother","father"]:
+        #     guardian_data["is_chaperone"]=True
 
-        user=Dependent.objects.create(**validated_data)
-        guardian_data={
-            "relationship":relationship,
-            "patient":guardian,
-            "dependent":user,
-            "is_chaperone":False
-        }
+        guardian=Guardianship.objects.create(
+            dependent=patient,
+            **validated_data
+        )
+        return guardian
 
-        if relationship in ["mother","father"]:
-            guardian_data['is_chaperone']=True
 
-        guardian=Guardianship.objects.create(**guardian_data)
-        return user
+    dependent = MinorPatientSerializer()  # ✅ Nested serializer for creation
+    guardian = serializers.UUIDField()    # ✅ Explicitly expect UUID
 
+    class Meta:
+        model = Guardianship
+        fields = ['dependent', 'guardian', 'relationship']
+
+    def create(self, validated_data):
+        # Step 1: Create the Dependent (minor patient)
+        dependent_data = validated_data.pop('dependent')
+        dependent = Dependent.objects.create(**dependent_data)
+
+        # Step 2: Create Guardianship
+        guardian_uuid = validated_data.pop('guardian')
+        guardian = Patient.objects.get(id=guardian_uuid)  # Fetch guardian instance
+        
+        guardianship = Guardianship.objects.create(
+            dependent=dependent,
+            guardian=guardian,
+            **validated_data
+        )
+        return guardianship
 
 class ListPatientSerializer(serializers.ModelSerializer):
     gender=serializers.CharField(read_only=True, source="get_gender_display")

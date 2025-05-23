@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer, MinorPatientSerializer
+from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer, GuardianshipSerializer
 from .permissions import IsOwnerOrAdmin, IsOwner
 from .models import Dependent
 
@@ -154,6 +154,12 @@ class CheckUniqueDetailsView(generics.GenericAPIView):
 
 class MinorPatientView(generics.ListCreateAPIView):
     queryset=Dependent.objects.all()
-    serializer_class=MinorPatientSerializer
+    serializer_class=GuardianshipSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
+
+    def post(self, request, *args, **kwargs):
+        serializer=self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"detail":"Registration successful","data":serializer.validated_data}, status=status.HTTP_201_CREATED)

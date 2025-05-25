@@ -8,8 +8,8 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import PatientSerializer, AuthSerializer, PasswordUpdateSerializer, ListPatientSerializer,UniqueDetailsAvailabilitySerializer, PasswordResetSerializer, GuardianshipSerializer
-from .permissions import IsOwnerOrAdmin, IsOwner
-from .models import Dependent
+from .permissions import IsOwnerOrAdmin, IsOwner, IsGuardian
+from .models import Dependent, Guardianship
 
 Patient=get_user_model()
 
@@ -152,14 +152,31 @@ class CheckUniqueDetailsView(generics.GenericAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class MinorPatientView(generics.ListCreateAPIView):
-    queryset=Dependent.objects.all()
+class DependentRegisterView(generics.CreateAPIView):
+    queryset=Guardianship.objects.all()
     serializer_class=GuardianshipSerializer
     permission_classes=[IsAuthenticated]
     throttle_classes=[UserRateThrottle]
 
     def post(self, request, *args, **kwargs):
+        request.data['guardian']=request.user.id
         serializer=self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"detail":"Registration successful","data":serializer.validated_data}, status=status.HTTP_201_CREATED)
+    
+class CurrentUserDependentsView(generics.ListAPIView):
+    serializer_class=GuardianshipSerializer
+    permission_classes=[IsAuthenticated, IsGuardian]
+    throttle_classes=[UserRateThrottle]
+
+    def get_queryset(self):
+        return Guardianship.objects.filter(guardian=self.request.user.id)
+
+class DependentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Guardianship.objects.all()
+    serializer_class=GuardianshipSerializer
+    permission_classes=[IsAuthenticated, IsGuardian]
+    throttle_classes=[UserRateThrottle]
+
+    

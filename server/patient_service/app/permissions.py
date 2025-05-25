@@ -8,6 +8,10 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj == request.user
+
+class IsGuardian(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.guardian==request.user
     
 class IsPatientsDoctor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):

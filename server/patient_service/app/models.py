@@ -103,11 +103,22 @@ class Dependent(models.Model):
         verbose_name_plural="Minors"
         ordering=['created_at']
 
+    def __str__ (self):
+        return f"{self.first_name or ''} {self.last_name or ''} {self.surname or ''}"
+    
 class Guardianship(models.Model):
     class RepationshipTypes(models.TextChoices):
         FATHER='father', 'Father'
         MOTHER='mother', 'Mother'
         GUARDIAN='guardian', 'Guardian'
+
+        @classmethod
+        def find(cls, value):
+            value = value.lower()
+            for choice in cls.choices:
+                if choice[0].lower() == value:
+                    return choice[0]
+            raise ValueError(f"Invalid relationship type: {value}")
 
     id=models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     dependent=models.ForeignKey(Dependent, on_delete=models.DO_NOTHING)

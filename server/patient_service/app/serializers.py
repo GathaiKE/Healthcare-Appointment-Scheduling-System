@@ -71,10 +71,14 @@ class MinorPatientSerializer(serializers.ModelSerializer):
         read_only_fields=['id','age','is_underage','created_at','updated_at']
 
 class GuardianshipSerializer(serializers.Serializer):
+    id=serializers.UUIDField(read_only=True, required=False)
+    relationship=serializers.CharField(required=True)
     dependent=MinorPatientSerializer(required=True, many=False)
-    class Meta:
-        fields=['id', 'dependent', 'guardian', 'relationship', 'is_chaperone','created_at','updated_at']
-        read_only_fields=['id','created_at','updated_at']
+    guardian=serializers.UUIDField(required=False)
+    is_chaperone=serializers.BooleanField(required=False, read_only=True)
+    created_at=serializers.DateTimeField(required=False, read_only=True)
+    updated_at=serializers.DateTimeField(required=False, read_only=True)
+
 
     def create(self, validated_data:dict):
         dependent_data_obj:dict=validated_data.pop("dependent",None)
@@ -86,46 +90,51 @@ class GuardianshipSerializer(serializers.Serializer):
         
         if relationship.lower() not in ["mother","father","guardian"]:
             raise serializers.ValidationError("The relationship entries recognized are father, mother or guardian")
-        validated_data['relationship']=relationship.lower()
+        validated_data['relationship'] = Guardianship.RepationshipTypes.find(relationship)
+        validated_data['is_chaperone'] = (relationship in ['father', 'mother'])
         dob=dependent_data_obj.get("date_of_birth")
         if dob is None:
             raise serializers.ValidationError("Please provid a valid date of birth")
         validator=DatesValidator()
         dependent_data_obj["date_of_birth"]=validator.validate_dob(dob)
+        guardian_id=validated_data.pop('guardian')
+        guardian_obj=Patient.objects.get(id=guardian_id)
         patient=Dependent.objects.create(**dependent_data_obj)
-        # guardian_data={"dependent_id":patient,**validated_data}
-        # if relationship in ["mother","father"]:
-        #     guardian_data["is_chaperone"]=True
-
         guardian=Guardianship.objects.create(
             dependent=patient,
-            **validated_data
-        )
+            guardian=guardian_obj,
+            **validated_data)
         return guardian
 
-
-    dependent = MinorPatientSerializer()  # ✅ Nested serializer for creation
-    guardian = serializers.UUIDField()    # ✅ Explicitly expect UUID
-
-    class Meta:
-        model = Guardianship
-        fields = ['dependent', 'guardian', 'relationship']
-
-    def create(self, validated_data):
-        # Step 1: Create the Dependent (minor patient)
-        dependent_data = validated_data.pop('dependent')
-        dependent = Dependent.objects.create(**dependent_data)
-
-        # Step 2: Create Guardianship
-        guardian_uuid = validated_data.pop('guardian')
-        guardian = Patient.objects.get(id=guardian_uuid)  # Fetch guardian instance
+    def update(self, instance, validated_data:dict):
+        dependent_data_obj:dict=validated_data.pop("dependent",None)
         
-        guardianship = Guardianship.objects.create(
-            dependent=dependent,
-            guardian=guardian,
-            **validated_data
-        )
-        return guardianship
+        
+        relationship=validated_data.get("relationship")
+
+        if relationship:
+            if relationship.lower() not in ["mother","father","guardian"]:
+                raise serializers.ValidationError("The relationship entries recognized are father, mother or guardian")
+            instance.relationship = Guardianship.RepationshipTypes.find(relationship)
+            instance.is_chaperone = (relationship in ['father', 'mother'])
+
+        dob=dependent_data_obj.get("date_of_birth")
+
+        if dob:
+            validator=DatesValidator()
+            dependent_data_obj["date_of_birth"]=validator.validate_dob(dob)
+
+        dependent=instance.dependent
+        for attribute, value in dependent_data_obj.items():
+            setattr(dependent, attribute, value)
+            dependent.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+
 
 class ListPatientSerializer(serializers.ModelSerializer):
     gender=serializers.CharField(read_only=True, source="get_gender_display")

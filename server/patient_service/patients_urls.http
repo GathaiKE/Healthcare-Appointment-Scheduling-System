@@ -20,25 +20,43 @@ POST http://127.0.0.1:8006/patients/login/
 Content-Type: application/json
 
 {
-    "email":"johndoe@gmail.com",
+    "email":"lenaealf@gmail.com",
     "password": "Patient@@1"
 }
 
 ###
-POST http://127.0.0.1:8006/patients/minors/register/
+POST http://127.0.0.1:8006/patients/me/dependents/register/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MDE4NzQ4LCJpYXQiOjE3NDgwMTY5NDgsImp0aSI6IjllODNhNmE4ZGU3ODRiNDI5Y2Q5MTc0ZDJmNjI2YzUzIiwidXNlcl9pZCI6IjAzNzRiMjkxLWQ4NDUtNDkzNS1hMzdkLTg2ZGQ4ODU0MzIxOCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.ARefBywUX7vl9ws9wHtjHZ1Z8XM-ShGIvGqrw-GI6BQkwS8qen03wPYqbh1isG4M1IBhzWWGZhZ3rP-fhvx0BW3JoMWDrvTQq0XFRIICIdv0QbJMtD3G8XX_xYmKqFGT2WZFgidYhqtCnjN_uFpUQmYNEm97Bqd6xDp0wRiI85HqoKCl26w7T-zHn2SXr2yxk-W25CUQOClZ5cqAtXc2MXcTVHzvx6GbqLk8wdX4GTkszrQ1sefwxELq6M377woSZhQlgaA6H8ALiIs6zwGPi-XpIm3nFoXTUo08YXdZIiAX4kakaeECp_rUxT57FxR2cRYFb1ucH9dZ1neJ700PgA
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MTg5MDI2LCJpYXQiOjE3NDgxODcyMjYsImp0aSI6ImUzMTY4NTBjYjQ0MjQ3YmE5ZmNiOWUwOTU2YjA4MmI5IiwidXNlcl9pZCI6IjBmMTliNWMyLTA2MzMtNGQzNi1hNDU4LTNkMGQ5ZmM4OTI5ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.JfwKCz02xvwHyo3KtJycgZYFvNA7GRoC6_krKZ_8uoE1arAGG4qgnNXXXJdxACGW6GwiRDF6ZaXgPcyPG0WbaPhlUx7SfsLkJgU-9tXl5ZkIBvr80PZm79v_vFy5rJyrWYV9ITpHbxpp-Iujcq94DBu0zYFVlPtuovqBoaJwMu9TL1VyUnVymyQG3JHF0Ac_isdB63mlU53wGBAYRejPC83R9nP08JyoqsszURhKl0tgU0d1hVRV_zNXRvnL_jGaEefYZDBqZ8Tl5BDHWtlNEWmltEaVQGV0IVFToL-uu5AuTh6jOYDHtOYeVOurgH67GzRNgAIdum0fqy1EJvCh6w
 
 {
     "dependent":{
-        "first_name":"Genine",
-        "last_name":"mayers",
-        "surname":"Doe",
-        "date_of_birth":"2010-06-10",
-        "gender":1
+        "first_name":"Lazarus",
+        "last_name":"Maina",
+        "surname":"Raztaf",
+        "date_of_birth":"2010-02-11",
+        "gender":0
     },
-    "guardian":"0374b291-d845-4935-a37d-86dd88543218",
     "relationship":"father"
+}
+###
+GET http://127.0.0.1:8006/patients/me/dependents/
+Authorization: Bearer  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MTg5MDI2LCJpYXQiOjE3NDgxODcyMjYsImp0aSI6ImUzMTY4NTBjYjQ0MjQ3YmE5ZmNiOWUwOTU2YjA4MmI5IiwidXNlcl9pZCI6IjBmMTliNWMyLTA2MzMtNGQzNi1hNDU4LTNkMGQ5ZmM4OTI5ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.JfwKCz02xvwHyo3KtJycgZYFvNA7GRoC6_krKZ_8uoE1arAGG4qgnNXXXJdxACGW6GwiRDF6ZaXgPcyPG0WbaPhlUx7SfsLkJgU-9tXl5ZkIBvr80PZm79v_vFy5rJyrWYV9ITpHbxpp-Iujcq94DBu0zYFVlPtuovqBoaJwMu9TL1VyUnVymyQG3JHF0Ac_isdB63mlU53wGBAYRejPC83R9nP08JyoqsszURhKl0tgU0d1hVRV_zNXRvnL_jGaEefYZDBqZ8Tl5BDHWtlNEWmltEaVQGV0IVFToL-uu5AuTh6jOYDHtOYeVOurgH67GzRNgAIdum0fqy1EJvCh6w
+
+###
+DELETE http://127.0.0.1:8006/patients/me/dependents/detail/38fe07db-80aa-4055-85a2-81562d0ed523/
+Content-Type: application/json
+Authorization: Bearer  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MTg5MDI2LCJpYXQiOjE3NDgxODcyMjYsImp0aSI6ImUzMTY4NTBjYjQ0MjQ3YmE5ZmNiOWUwOTU2YjA4MmI5IiwidXNlcl9pZCI6IjBmMTliNWMyLTA2MzMtNGQzNi1hNDU4LTNkMGQ5ZmM4OTI5ZCIsImlzX3N1cGVydXNlciI6ZmFsc2UsImlzX3N0YWZmIjpmYWxzZSwiaXNfYWN0aXZlIjp0cnVlLCJpc3MiOiJwYXRpZW50X3NlcnZpY2UiLCJhdWQiOlsiYXBwb2ludG1lbnRfc2VydmljZSIsImRvY3Rvcl9zZXJ2aWNlIiwibWVkaWNhbF9yZWNvcmRzX3NlcnZpY2UiXSwicm9sZSI6InBhdGllbnQifQ.JfwKCz02xvwHyo3KtJycgZYFvNA7GRoC6_krKZ_8uoE1arAGG4qgnNXXXJdxACGW6GwiRDF6ZaXgPcyPG0WbaPhlUx7SfsLkJgU-9tXl5ZkIBvr80PZm79v_vFy5rJyrWYV9ITpHbxpp-Iujcq94DBu0zYFVlPtuovqBoaJwMu9TL1VyUnVymyQG3JHF0Ac_isdB63mlU53wGBAYRejPC83R9nP08JyoqsszURhKl0tgU0d1hVRV_zNXRvnL_jGaEefYZDBqZ8Tl5BDHWtlNEWmltEaVQGV0IVFToL-uu5AuTh6jOYDHtOYeVOurgH67GzRNgAIdum0fqy1EJvCh6w
+
+{
+    "relationship":"father",
+    "dependent": {
+      "first_name": "Janet",
+      "last_name": "Ambanyo",
+      "surname": "Raztaf",
+      "email": "janetambayo@gmail.com",
+      "phone": "25412166018"
+    }
 }
 
 ###
